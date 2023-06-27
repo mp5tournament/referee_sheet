@@ -434,6 +434,10 @@ const part={
 }
 
 // 正文
+window.onbeforeunload=function(){
+    return '确认要退出吗？'
+}
+
 function changeAll(fatherNode,varName,text){
     text=esc(String(text))
     for(node of fatherNode.getElementsByClassName('v_'+varName)) node.innerHTML=text
