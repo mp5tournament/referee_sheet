@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>MP5裁判表</title>
 <script type="text/javascript">
-const tournament={name:null,tbPickable:null,tbPickable:null,tbOnlyOne:null,teamData:null,rounds:null,poolMod:null,poolSymbol:null}
+const tournament={name:null,tbPickable:null,tbPickable:null,tbOnlyOne:null,teamPlayingSize:null,teamData:null,rounds:null,poolMod:null,poolSymbol:null}
 // 锦标赛设置
 tournament.rounds={
     友谊赛图池2:{
@@ -65,6 +65,8 @@ tournament.name='MP5 Mystic Arena'
 tournament.tbPickable=true
 
 tournament.tbOnlyOne=true
+    
+tournament.teamPlayingSize=4
 
 tournament.poolMod={
     NM:'NF',
@@ -381,7 +383,7 @@ const part={
         '!MP INVITE {red_cap}',
         '!MP INVITE {blue_cap}',
         '!MP ADDREF',
-        '红队：{red}，1-4楼；蓝队：{blue}，5-8楼',
+        `红队：{red}，1-${tournament.teamPlayingSize}楼；蓝队：{blue}，${tournament.teamPlayingSize+1}-${tournament.teamPlayingSize*2}楼`,
         '请双方队长roll点决定BP顺序',
         '',
         '先选方为{fp_t}',
