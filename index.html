@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>MP5裁判表</title>
 <script type="text/javascript">
-const tournament={name:null,tbPickable:null,tbPickable:null,tbOnlyOne:null,teamPlayingSize:null,teamData:null,rounds:null,poolMod:null,poolSymbol:null}
+const tournament={name:null,nickname:null,tbPickable:null,tbPickable:null,tbOnlyOne:null,teamPlayingSize:null,teamData:null,rounds:null,poolMod:null,poolSymbol:null}
 // 锦标赛设置
 tournament.rounds={
     友谊赛图池2:{
@@ -62,6 +62,8 @@ tournament.teamData=`
 
 tournament.name='MP5 Mystic Arena'
 
+tournament.nickname='MP5MA'
+    
 tournament.tbPickable=true
 
 tournament.tbOnlyOne=true
@@ -378,7 +380,7 @@ a:hover{
 // 命令设置
 const part={
     startup:[
-        '!MP MAKE MP5MA: ({red}) vs ({blue})',
+        `!MP MAKE ${tournament.nickname}: ({red}) vs ({blue})`,
         '!MP SET 2 3',
         '!MP INVITE {red_cap}',
         '!MP INVITE {blue_cap}',
