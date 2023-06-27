@@ -1,0 +1,869 @@
+<html>
+<head>
+    <link rel="icon" sizes="32x32" href="https://osu.ppy.sh/images/favicon/favicon-32x32.png">
+    <link rel="icon" sizes="16x16" href="https://osu.ppy.sh/images/favicon/favicon-16x16.png">
+    <meta charset="utf-8">
+    <title>MP5裁判表</title>
+<script type="text/javascript">
+const tournament={name:null,tbPickable:null,tbPickable:null,tbOnlyOne:null,teamData:null,rounds:null,poolMod:null,poolSymbol:null}
+// 锦标赛设置
+tournament.rounds={
+    友谊赛图池2:{
+        events:'bpt',
+        pool:{
+            NM:
+`
+2403946
+3714369
+2284217
+1566637
+4099127
+3646485
+`.trim().split('\n'),
+            HD:
+`
+1755526
+361688
+3171555
+`.trim().split('\n'),
+            HR:
+`
+1559935
+2980264
+`.trim().split('\n'),
+            DT:
+`
+876674
+421129
+2610813
+924562
+`.trim().split('\n'),
+            FM:
+`
+1853842
+1865143
+2012588
+`.trim().split('\n'),
+            TB:
+`
+1294192
+1045757
+3205625
+`.trim().split('\n'),
+        }
+    }
+}
+
+tournament.teamData=`
+辉辉老阿姨的后宫团	BurgerKing	Boring666	Stick_Fish	tangkeke71	Kevin0036	MizukiQwQ
+绿色健康萌萌乐	kukupa	[Paw]OchiKouri	natsume umi	the origin	qianli1611	Glacc
+无所谓，neuro会代打	LunaCracker	Saikaisa	[W]hiteRBQ 033	Fungus OVO	pip233	misaki daisuki
+`.trim().split('\n')
+
+tournament.name='MP5 Mystic Arena'
+
+tournament.tbPickable=true
+
+tournament.tbOnlyOne=true
+
+tournament.poolMod={
+    NM:'NF',
+    HD:'NF HD',
+    HR:'NF HR',
+    DT:'NF DT FreeMod',
+    FM:'NF FreeMod',
+    TB:'NF FreeMod',
+}
+
+tournament.poolSymbol={
+    NM:'⚪',
+    HD:'🟡',
+    HR:'🔴',
+    DT:'🟣',
+    FM:'🔵',
+    TB:'🟢',
+}
+</script>        
+<style>
+.hidden{
+    display: none;
+}
+#configui { 
+    position: fixed; 
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0,0,0,0.5);
+    z-index:10;
+}
+#configui .window { 
+    position: fixed; 
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin:auto;
+    width: 500px; 
+    height: 230px; 
+    padding: 20px; 
+    box-shadow: 3px 3px 10px #404040;
+    background-color: white; 
+    z-index:20;
+}
+body{
+    background-color:#F3F5F7;
+    margin:0;
+    font-size:18px;
+    line-height: 30px;
+}
+#body{
+    display: flex;
+    width:100%;
+}
+#general{
+    min-width:300px;
+    max-width:300px;
+    background-color:white;
+    padding:8px;
+    padding-top:8px;
+    box-shadow: 1px 1px 3px grey;
+}
+#main{
+    height: 100vh;
+    overflow: auto;
+    width:100%;
+}
+table{
+    font-size:18px;
+    line-height: 30px;
+}
+td{
+    vertical-align:top;
+}
+.part{
+    width:575px;
+    margin:5px;
+    padding:10px;
+    box-shadow: 3px 3px 10px grey;
+    border-radius: 10px;
+    background-color:#EEEEEE;
+}
+.emoji{
+    width:30px;
+}
+span.emoji{
+    width:30px;
+    display:inline-block;
+}
+.part .meta{
+    max-width:200px;
+    min-width:200px;
+}
+.part .command{
+    min-width:300px;
+    max-width:300px;
+    background-color: white;
+    box-shadow: inset 1px 1px 3px grey;
+    padding:5px;
+    margin:8px;
+    margin-left:20px;
+}
+.part .meta .key{
+    max-width:54px;
+    min-width:54px;
+}
+.part .meta .value{
+    max-width:146px;
+    min-width:146px;
+}
+.startup, .settle{
+    background-color:#FFFFEE;
+}
+.ban:nth-child(even){
+    background-color:#FFEEEE;
+}
+.ban:nth-child(odd){
+    background-color:#EEEEFF;
+}
+.pick:nth-child(odd){
+    background-color:#FFEEEE;
+}
+.pick:nth-child(even){
+    background-color:#EEEEFF;
+}
+.magic{
+    background-color:#FFFFEE;
+}
+.tb{
+    background-color:#EEFFEE;
+}
+.title{
+    font-weight:bold;
+}
+.cen{
+    text-align: center;
+}
+.rta{
+    text-align: right;
+}
+.mid{
+    margin:auto;
+}
+button{
+    width:100px;
+    font-size:18px;
+    height:30px;
+}
+.textarea{
+    width:195px;
+    padding-left:3px;
+    padding-right:3px;
+    background-color: white;
+    border:1px solid #767676;
+    border-radius: 2px;
+}
+.info-textarea{
+    font-family:"Microsoft YaHei";}
+select{
+    width:146px;
+    font-size:18px;
+    height:30px;
+}
+input{
+    width:210px;
+    font-size:18px;
+    height:30px;
+}
+input::-webkit-outer-spin-button,input::-webkit-inner-spin-button {
+    -webkit-appearance: none !important;
+}
+input[type='number'] {
+    -moz-appearance: textfield;
+}
+a{
+    text-decoration:none;
+    color:black;
+    display: block;
+}
+a:hover{
+    background-color: #F4F4F4;
+}
+.tip-box {
+    position: fixed; 
+    top: 0;
+    bottom: 0;
+    font-size: 12px;
+    line-height: 12px;
+    height: 12px;
+    padding: 3px; 
+    box-shadow: 1px 1px 3px grey;
+    background-color: white; 
+    z-index:40;
+    display: none;
+    user-select: none;
+}
+</style>
+</head>
+<body>
+<div class="tip-box">复制成功</div>
+<div id="body">
+<div id="configui">
+<div class="window">
+    <table cellspacing="0">
+        <tr><td style="width:210px">🟥 红队</td><td style="width:80px"></td><td style="width:210px" class="rta">蓝队 🟦</td></tr>
+        <tr>
+            <td><select class="team" style="width:210px"><option value="">请选择</option></select></td>
+            <td class="cen">预设</td>
+            <td><select class="team rta" style="width:210px"><option value="">请选择</option></select></td>
+        </tr>
+        <tr class="name"><td><input class="red" type="text" value="红队"></td><td class="cen">队名</td><td><input class="blue rta" type="text" value="蓝队"></td></tr>
+        <tr class="cap"><td><input class="red" type="text"></td><td class="cen">队长</td><td><input class="blue rta" type="text"></td></tr>
+    </table>
+    <hr>
+    <table cellspacing="0" class="mid">
+        <tr><td style="width:54px;text-align: right">轮次：</td><td style="width:135px"><select class="round" style="width:135px"></select></td></tr>
+    </table>
+    <hr>
+    <table cellspacing="0" class="mid">
+        <tr><td style="width:175px" class="cen"><button>确定</button></td>
+            <td style="width:175px" class="cen"><button disabled>取消</button></td></tr>
+    </table>
+</div></div>
+
+<div class="hidden">
+    <div class="part startup"><table cellspacing="0"><tr>
+        <td class="emoji">⌛</td>
+        <td class="meta"><table cellspacing="0"><tr><td class="title" colspan="2">赛前赛初准备</td></tr>
+            <tr><td class="key">先选：</td><td class="value"><select class="team" onchange="partOnChange(this)">
+                           <option value="">请选择</option>
+                           <option value="red">🟥红队</option>
+                           <option value="blue">🟦蓝队</option>
+                   </select></td></tr>
+            <tr><td class="key">MID：</td><td class="value"><input style="width:146px" placeholder="选填 MPLink或ID" onchange="partOnChange(this)"></td></tr>
+            <tr><td colspan="2">备注</td></tr>
+            <tr><td colspan="2"><div class="textarea" contenteditable="true"></div></td></tr>
+        </table></td>
+        <td class="commandout"><div class="command"></div></td>
+    </tr></table></div>
+
+    <div class="part ban hidden" cellspacing="0"><table cellspacing="0"><tr>
+        <td class="emoji">🚫</td>
+        <td class="meta"><table cellspacing="0"><tr><td class="title" colspan="2"><span class="v_color"></span>禁图</td></tr>
+            <tr><td class="key">禁图：</td><td class="value"><select class="map" onchange="partOnChange(this)"></select></td></tr>
+            <tr><td colspan="2">备注</td></tr>
+            <tr><td colspan="2"><div class="textarea" contenteditable="true"></div></td></tr>
+        </table></td>
+        <td class="commandout"><div class="command"></div></td>
+    </tr></table></div>
+
+    <div class="part pick hidden" cellspacing="0"><table cellspacing="0"><tr>
+        <td class="emoji">⚔️</td>
+        <td class="meta"><table cellspacing="0"><tr><td class="title" colspan="2"><span class="v_color"></span>选图</td></tr>
+            <tr><td class="key">选图：</td><td class="value"><select class="map" onchange="partOnChange(this)"></select></td></tr>
+            <tr><td class="key">胜者：</td><td class="value"><select class="team" onchange="partOnChange(this)">
+                           <option value="">请选择</option>
+                           <option value="red">🟥红队</option>
+                           <option value="blue">🟦蓝队</option>
+                   </select></td></tr>
+            <tr><td colspan="2">备注</td></tr>
+            <tr><td colspan="2"><div class="textarea" contenteditable="true"></div></td></tr>
+        </table></td>
+        <td class="commandout"><div class="command"></div></td>
+    </tr></table></div>
+    
+    <div class="part tb hidden" cellspacing="0"><table cellspacing="0"><tr>
+        <td class="emoji">⚔️</td>
+        <td class="meta"><table cellspacing="0"><tr><td class="title" colspan="2">TB</td></tr>
+            <tr class="selectTB"><td class="key">选图：</td><td class="value"><select class="map" onchange="partOnChange(this)"></select></td></tr>
+            <tr><td class="key">胜者：</td><td class="value"><select class="team" onchange="partOnChange(this)">
+                           <option value="">请选择</option>
+                           <option value="red">🟥红队</option>
+                           <option value="blue">🟦蓝队</option>
+                   </select></td></tr>
+            <tr><td colspan="2">备注</td></tr>
+            <tr><td colspan="2"><div class="textarea" contenteditable="true"></div></td></tr>
+        </table></td>
+        <td class="commandout"><div class="command"></div></td>
+    </tr></table></div>
+
+    <div class="part settle hidden"><table cellspacing="0"><tr>
+        <td class="emoji">🏅</td>
+        <td class="meta"><table cellspacing="0"><tr><td class="title" colspan="2">比赛结束</td></tr>
+            <tr><td colspan="2">备注</td></tr>
+            <tr><td colspan="2"><div class="textarea" contenteditable="true"></div></td></tr>
+        </table></td>
+        <td class="commandout"><div class="command"></div></td>
+    </tr></table></div>
+</div>
+
+<div id="general">
+    <a id="config" href="javascript:void(0)"><span class="emoji">⚙️</span>设置</a>
+    <hr>
+    <a id="export" href="javascript:void(0)"><span class="emoji">💾</span>保存比赛记录</a>
+    <hr>
+    <div><span class="emoji">🏆</span><span class="v_tournament"></span></div>
+    <div><span class="emoji">📌</span><span class="v_round"></span></div>
+    <div><span class="emoji">🟥</span><span class="v_red"></span></div>
+    <div><span class="emoji">🟦</span><span class="v_blue"></span></div>
+    <hr>
+    <div class="command"></div>
+</div>
+<div id="main">
+</div>
+</div>
+<script type="text/javascript">
+// 命令设置
+const part={
+    startup:[
+        '!MP MAKE MP5MA: ({red}) vs ({blue})',
+        '!MP SET 2 3',
+        '!MP INVITE {red_cap}',
+        '!MP INVITE {blue_cap}',
+        '!MP ADDREF',
+        '红队：{red}，1-4楼；蓝队：{blue}，5-8楼',
+        '请双方队长roll点决定BP顺序',
+        '',
+        '先选方为{fp_t}',
+    ],
+    ban:[
+        '请 {team} ban图',
+        '',
+        '蓝队ban {map}',
+        '!MP MAP {bid}',
+    ],
+    pick:[
+        '请 {team} 选图',
+        '',
+        '!MP MAP {bid}',
+        '!MP MODS {mod}',
+        '',
+        '{red} {sr}:{sb} {blue}',
+    ],
+    tb:tournament.tbOnlyOne?[
+        '双方均取得赛点，比赛即将进入TB。',
+        '!MP MAP {bid}',
+        '!MP MODS {mod}',
+        '',
+        '{red} {sr}:{sb} {blue}',
+    ]:[
+        '双方均取得赛点，比赛即将进入TB。请双方分别私聊我想要ban的图。',
+        '双方均取得赛点，比赛即将进入TB。',
+        '',
+        '!MP MAP {bid}',
+        '!MP MODS {mod}',
+        '',
+        '{red} {sr}:{sb} {blue}',
+    ],
+    settle:[
+        '恭喜{team}获胜',
+        '!MP CLOSE',
+    ],
+    general:[
+        '!MP  TIMER 120',
+        '!MP TIMER 90',
+        '!MP TIMER 60',
+        '',
+        '!MP SETTINGS',
+        '!MP START 10',
+        '!MP START 5',
+        '!MP ABORT',
+        '',
+        '本局的魔法是：',
+    ]
+}
+
+// 正文
+function changeAll(fatherNode,varName,text){
+    text=esc(String(text))
+    for(node of fatherNode.getElementsByClassName('v_'+varName)) node.innerHTML=text
+}
+changeAll(document,'tournament',tournament.name)
+
+function esc(s){
+    s = s.replace(/&/g,"&amp;")
+    s = s.replace(/</g,"&lt;")
+    s = s.replace(/>/g,"&gt;")
+    s = s.replace(/　/g,"&emsp;")
+    s = s.replace(/\'/g,"&#39;")
+    s = s.replace(/\"/g,"&quot;")
+    return s
+}
+const main=document.getElementById('main')
+const general=document.getElementById('general')
+const configui=document.getElementById('configui')
+let config=null
+
+// 复制命令
+{
+    const mouse={x:0,y:0}
+    const box0=document.getElementsByClassName('tip-box')[0]
+    document.addEventListener('click', function(event){
+        mouse.x = event.clientX
+        mouse.y = event.clientY
+    })
+    function copyText(x){
+        const input = document.createElement('textarea')
+        document.body.appendChild(input)
+        input.innerHTML = x.textContent
+        input.select()
+        document.execCommand('Copy')
+        document.body.removeChild(input)
+
+        setTimeout(function(){
+            const box = box0.cloneNode(true)
+            document.body.appendChild(box)
+            box.style.left = mouse.x + 'px'
+            box.style.top = mouse.y + 'px'
+            box.style.display = 'block'
+            box.style.opacity = 1
+            setTimeout(function(){
+                box.style.opacity = 0.75
+                setTimeout(function(){
+                    box.style.opacity = 0.5
+                },40)
+                setTimeout(function(){
+                    box.style.opacity = 0.25
+                },80)
+                setTimeout(function(){
+                    box.style.opacity = 0
+                    document.body.removeChild(box)
+                },120)
+            },500)
+        },10)
+    }
+}
+
+// commands
+{
+    function loadPart(partName){
+        let thisPart=document.getElementsByClassName(partName)[0]
+        let commands=part[partName]
+        let fatherNode=(partName=='general'?general:thisPart).getElementsByClassName('command')[0]
+        for(command of commands){
+            if(command){
+                let nc=document.createElement('a')
+                fatherNode.appendChild(nc)
+                nc.setAttribute('href','javascript:void(0)')
+                nc.setAttribute('onclick','copyText(this)')
+                nc.innerHTML=esc(command).replace(/{/g,'<span class="v_').replace(/}/g,'"></span>')
+            }else if(partName=='general'){
+                fatherNode.appendChild(document.createElement('hr'))
+            }else{
+                let nf=document.createElement('div')
+                nf.setAttribute('class','step hidden')
+                fatherNode.appendChild(nf)
+                fatherNode=nf
+            }
+        }
+        part[partName]=thisPart
+    }
+    for(partName in part)loadPart(partName)
+    if(tournament.tbOnlyOne)part.tb.getElementsByClassName('selectTB')[0].classList.add('hidden')
+}
+
+
+// configui
+{
+    const c_red={
+        select:configui.getElementsByTagName('select')[0],
+        name:configui.getElementsByClassName('name')[0].getElementsByClassName('red')[0],
+        cap:configui.getElementsByClassName('cap')[0].getElementsByClassName('red')[0]}
+    const c_blue={
+        select:configui.getElementsByTagName('select')[1],
+        name:configui.getElementsByClassName('name')[0].getElementsByClassName('blue')[0],
+        cap:configui.getElementsByClassName('cap')[0].getElementsByClassName('blue')[0]}
+    const c_round=configui.getElementsByClassName('round')[0]
+    const c_button=configui.getElementsByTagName('button')
+    for (i in tournament.teamData){
+        let team=tournament.teamData[i].split('\t')
+        tournament.teamData[i]={name:team[0],cap:team[1]}
+        let opt=document.createElement('option')
+        opt.setAttribute('value',i)
+        c_red.select.add(new Option(team[0],i))
+        c_blue.select.add(new Option(team[0],i))
+    }
+    for (round in tournament.rounds){
+        c_round.add(new Option(round,round))
+    }
+
+    function autoSelect(team){
+        let i=parseInt(team.select.value)
+        if (i<0){
+            team.name.value=team==c_red?'🟥红队':'🟦蓝队'
+            team.cap.value=''
+        }else{
+            team.name.value=tournament.teamData[i].name
+            team.cap.value=tournament.teamData[i].cap
+        }
+    }
+    c_red.select.onchange=function(){
+        autoSelect(c_red)
+    }
+    c_blue.select.onchange=function(){
+        autoSelect(c_blue)
+    }
+
+    c_button[0].onclick=function(){
+        if(config){
+            if(!confirm("修改设置将导致页面重新初始化，已填写的信息丢失，你确定要这么做吗？"))return
+        }else{
+            c_button[1].removeAttribute('disabled')
+        }
+        init()
+        configui.classList.add('hidden')
+    }
+    c_button[1].onclick=function(){
+        configui.classList.add('hidden')
+    }
+    document.getElementById('config').onclick=function(){configui.classList.remove('hidden')}
+
+    function reloadConfig(){
+        let round=tournament.rounds[c_round.value]
+        let pool={}
+        for(mod in round.pool){
+            let pickable=[false,false,false]
+            if(mod=='TB'){
+                pickable[2]=true
+                if(tournament.tbPickable)pickable[1]=true
+            }else{
+                pickable[0]=true
+                pickable[1]=true
+            }
+            if(round.pool[mod].length>1) for(i in round.pool[mod]){
+                pool[mod+(parseInt(i)+1)]={bid:round.pool[mod][i],mod:tournament.poolMod[mod],symbol:tournament.poolSymbol[mod],pickable}
+            }
+            if(round.pool[mod].length==1){
+                pool[mod]={bid:round.pool[mod][0],mod:tournament.poolMod[mod],pickable}
+            }
+        }
+        config={
+            round:c_round.value,
+            red:{
+                name:c_red.name.value,
+                cap:c_red.cap.value,
+            },
+            blue:{
+                name:c_blue.name.value,
+                cap:c_blue.cap.value,
+            },
+            events:round.events,
+            gamestowin:round.events.replace('b','').length,
+            pool,
+        }
+    }
+}
+
+// 保存比赛记录
+{
+    document.getElementById('export').onclick=function(){
+        if(!config)return
+        let =general.getElementsByClassName('v_tournament')[0].textContent
+        let mplink=events[0].dom.getElementsByTagName('input')[0].value.split('/')
+        for(i=mplink.length-1;i>=0;i--)if(mplink[i])
+        {
+            mplink=mplink[i]
+            break
+        }
+        mplink=typeof(mplink)=='string'?`https://osu.ppy.sh/community/matches/${mplink}\n`:''
+
+        let ban={红队:'🟥ban',蓝队:'🟦ban'}
+        let pick=''
+        let sr=''
+        let sb=''
+        let scmd=''
+        for(event of events){
+            if(event.dom.classList.contains('hidden'))continue
+            const cmd=event.dom.getElementsByClassName('textarea')[0].textContent
+            if(event.type=='startup'){
+                scmd=`${cmd?`（${cmd}）\n`:''}`
+            }else if(event.type=='ban'){
+                ban[event.color]+=` ${event.map=='0'?'空':event.map}${cmd?`（${cmd}）`:''}`
+            }else if(event.type=='pick'){
+                pick+=`${event.win=='red'?'🟥':'🟦'}|${event.color=='红队'?'🟥':'🟦'} ${event.map}${cmd?`（${cmd}）`:''}\n`
+            }else if(event.type=='tb'){
+                pick+=`${event.win=='red'?'🟥':'🟦'}|🟩 ${event.map}${cmd?`（${cmd}）`:''}\n`
+            }else if(event.type=='settle'){
+                sr=event.sr
+                sb=event.sb
+                pick+=`${sr>sb?`🟥${config.red.name}`:`🟦${config.blue.name}`}获胜！${cmd?`（${cmd}）`:''}\n`
+            }
+        }
+        ban=firstPick=='red'?`${ban['蓝队']}\n${ban['红队']}`:`${ban['红队']}\n${ban['蓝队']}`
+        title=`${tournament.name} ${config.round} ${config.red.name} vs ${config.blue.name}`
+        text=`${tournament.name} ${config.round} \n`
+            +`${mplink}\n`
+            +`${config.red.name} ${sr}:${sb} ${config.blue.name}\n${scmd}\n`
+            +ban
+            +`\n\n胜|选\n`
+            +pick
+
+        {
+            const blob = new Blob([text], {
+                type: 'text/plain;charset=utf-8'
+            })
+            const objectURL = URL.createObjectURL(blob)
+            const aTag = document.createElement('a')
+            aTag.href = objectURL
+            aTag.download = title+'.txt'
+            aTag.click()
+            URL.revokeObjectURL(objectURL)
+        }
+    }
+}
+
+let events=[]
+let firstPick=null
+
+function allTrue(x){
+    for(i of x)if(!i)return false
+    return true
+}
+
+const firstPickRegulator=document.createElement('div')
+firstPickRegulator.setAttribute('class','part hidden')
+
+function makeFinish(n,finish=true,settle=false){
+    n=parseInt(n)
+    const event=events[n]
+    const l=events.length-1
+    if(finish){
+        event.finish=true
+        if(settle){
+            for(i=n+1;i<l;i++)events[i].dom.classList.add('hidden')
+            events[l].sr=events[n].sr
+            events[l].sb=events[n].sb
+            partOnChange(null,l)
+        }else partOnChange(null,n+1)
+    }else{
+        event.finish=false
+        for(i=n+1;i<=l;i++)events[i].dom.classList.add('hidden')
+    }
+}
+
+function partOnChange(thisPart,n=null){
+    if(n===null){
+        while(!thisPart.classList.contains('part')){
+            thisPart=thisPart.parentNode
+        }
+        for(i in events)if(events[i].dom==thisPart){
+            n=i
+            break
+        }
+    }
+    n=parseInt(n)
+    let event=events[n]
+    event.dom.classList.remove('hidden')
+    let values={}
+    let steps=[]
+    if(event.type=='startup'){
+        event.sr=0
+        event.sb=0
+
+        firstPick=event.dom.getElementsByTagName('select')[0].value
+
+        try{
+            if(firstPick=='red') main.insertBefore(firstPickRegulator,event.dom)
+            if(firstPick=='blue') main.removeChild(firstPickRegulator)
+        }catch{}
+
+        if(firstPick){
+            values.fp_t=config[firstPick].name
+            let x=firstPick=='red'?1:0
+            for(i in events){
+                let y=null
+                if(events[i].type=='ban')y=1
+                if(events[i].type=='pick')y=0
+                if(y===null)continue
+                events[i].color=i&1^x^y?'蓝队':'红队'
+                events[i].team=i&1^x^y?config.blue.name:config.red.name
+            }
+        }
+
+        steps=[firstPick!='']
+    } else if(event.type=='ban'){
+        event.sr=events[n-1].sr
+        event.sb=events[n-1].sb
+
+        values.color=event.color
+        values.team=event.team
+        values.map=event.dom.getElementsByTagName('select')[0].value
+        event.map=values.map
+        if(values.map){
+            values.bid=values.map=='0'?'空':config.pool[values.map].bid
+        }
+
+        steps=[values.map!='']
+    } else if(event.type=='pick'){
+        event.sr=events[n-1].sr
+        event.sb=events[n-1].sb
+
+        values.color=event.color
+        values.team=event.team
+        values.map=event.dom.getElementsByTagName('select')[0].value
+        event.map=values.map
+        if(values.map){
+            values.bid=config.pool[values.map].bid
+            values.mod=config.pool[values.map].mod
+        }
+        values.win=event.dom.getElementsByTagName('select')[1].value
+        event.win=values.win
+        if(values.win=='red')event.sr+=1
+        if(values.win=='blue')event.sb+=1
+        values.sr=event.sr
+        values.sb=event.sb
+
+        steps=[values.map!='',values.win!='']
+    } else if(event.type=='tb'){
+        event.sr=events[n-1].sr
+        event.sb=events[n-1].sb
+        values.win=event.dom.getElementsByTagName('select')[1].value
+        event.win=values.win
+        if(values.win=='red')event.sr+=1
+        if(values.win=='blue')event.sb+=1
+        values.sr=event.sr
+        values.sb=event.sb
+        
+        if(tournament.tbOnlyOne){
+            values.map=event.dom.getElementsByTagName('select')[0].options[1].value
+            event.map=values.map
+            if(values.map){
+                values.bid=config.pool[values.map].bid
+                values.mod=config.pool[values.map].mod
+            }
+            steps=[values.win!='']
+        }else{
+            values.map=event.dom.getElementsByTagName('select')[0].value
+            event.map=values.map
+            if(values.map){
+                values.bid=config.pool[values.map].bid
+                values.mod=config.pool[values.map].mod
+            }
+            steps=[values.map!='',values.win!='']
+        }
+    } else if(event.type=='settle'){
+        values.team=event.sr>event.sb?config.red.name:config.blue.name
+    }
+
+    for(key in values)changeAll(event.dom,key,values[key])
+    for(i in steps){
+        const nodeClass=event.dom.getElementsByClassName('step')[i].classList
+        if(steps[i])nodeClass.remove('hidden')
+        else nodeClass.add('hidden')
+    }
+    if(event.type!='settle')makeFinish(n,allTrue(steps),event.sr>=config.gamestowin||event.sb>=config.gamestowin)
+}
+
+function addEvent(type){
+    dom=part[type].cloneNode(true)
+    main.appendChild(dom)
+    events.push({dom,type,finish:false,sr:null,sb:null})
+}
+
+function init(){
+    reloadConfig()
+
+    {
+        const b=part.ban.querySelector('select.map')
+        const p=part.pick.querySelector('select.map')
+        const t=part.tb.querySelector('select.map')
+        b.innerHTML=''
+        p.innerHTML=''
+        t.innerHTML=''
+        b.add(new Option('请选择',''))
+        b.add(new Option('❌空ban',0))
+        p.add(new Option('请选择',''))
+        t.add(new Option('请选择',''))
+        for(map in config.pool){
+            if(config.pool[map].pickable[0])b.add(new Option(config.pool[map].symbol+map,map))
+            if(config.pool[map].pickable[1])p.add(new Option(config.pool[map].symbol+map,map))
+            if(config.pool[map].pickable[2])t.add(new Option(config.pool[map].symbol+map,map))
+        }
+    }
+    
+    changeAll(document,'round',config.round)
+    changeAll(document,'red',config.red.name)
+    changeAll(document,'blue',config.blue.name)
+    changeAll(document,'red_cap',config.red.cap)
+    changeAll(document,'blue_cap',config.blue.cap)
+
+    events=[]
+    while(main.firstChild)main.removeChild(main.firstChild)
+
+    addEvent('startup')
+    for(event of config.events){
+        if(event=='b'){
+            addEvent('ban')
+            addEvent('ban')
+        } else if(event=='p'){
+            addEvent('pick')
+            addEvent('pick')
+        } else if(event=='t'){
+            addEvent('tb')
+        }
+    }
+    addEvent('settle')
+}
+</script>
+</body>
+</html>
