@@ -26,7 +26,7 @@ pool表示图池，里面的数字是bid，格式照抄就行。
 ### tbPickable：是否允许在一般选图时选TB
 一般为false，如果为true的话选图的下拉菜单里会出现TB，但影响不大。
 ### tbOnlyOne：是不是单TB
-一般为false，如果是3TB之类的情况用true。
+一般为true，如果是3TB之类的情况用false。
 ### teamPlayingSize：每队上场人数
 3v3就是3，4v4就是4。
 ### poolMod：图池Mod
