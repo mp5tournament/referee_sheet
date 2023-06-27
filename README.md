@@ -24,7 +24,7 @@ pool表示图池，里面的数字是bid，格式照抄就行。
 ### nickname：比赛简称
 如"MP5S20"，会成为房间名的开头部分。
 ### tbPickable：是否允许在一般选图时选TB
-一般为false，如果为true的话选图的下拉菜单里会出现TB，但影响不大。
+一般为false，如果为true的话选图的下拉菜单里会出现TB。
 ### tbOnlyOne：是不是单TB
 一般为true，如果是3TB之类的情况用false。
 ### teamPlayingSize：每队上场人数
