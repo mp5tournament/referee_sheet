@@ -123,7 +123,6 @@ body{
 }
 #body{
     display: flex;
-    width:100%;
 }
 #general{
     min-width:300px;
@@ -139,12 +138,12 @@ body{
     width:630px;
 }
 #assistout{
-    min-width:430px;
-    max-width:430px;
+    min-width:510px;
+    max-width:510px;
     background-color: white;
     border-radius: 10px;
     box-shadow: 1px 1px 3px grey;
-    padding:10px;
+    padding:6px;
 }
 table{
     font-size:18px;
@@ -382,7 +381,7 @@ a:hover{
         <td class="commandout"><div class="command"></div></td>
     </tr></table></div>
 
-    <table><tr class="assist_line"><td style="width:170px"><a class="map"></a></td><td style="width:250px"><a class="mod"></a></td></tr></table>
+    <table><tr class="assist_line"><td style="width:80px" class="pos"></td><td style="width:170px"><a class="map"></a></td><td style="width:250px"><a class="mod"></a></td></tr></table>
 </div>
 
 <div id="general">
@@ -905,6 +904,8 @@ function init(){
     for(map in config.pool){
         let nl=assistLine.cloneNode(true)
 
+        let ncPos=nl.getElementsByClassName('pos')[0]
+        ncPos.innerHTML=`${config.pool[map].symbol}${map}`
         let ncMap=nl.getElementsByClassName('map')[0]
         ncMap.setAttribute('href','javascript:void(0)')
         ncMap.setAttribute('onclick','copyText(this)')
