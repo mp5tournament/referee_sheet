@@ -136,7 +136,15 @@ body{
 #main{
     height: 100vh;
     overflow: auto;
-    width:100%;
+    width:630px;
+}
+#assistout{
+    min-width:430px;
+    max-width:430px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 1px 1px 3px grey;
+    padding:10px;
 }
 table{
     font-size:18px;
@@ -373,10 +381,13 @@ a:hover{
         </table></td>
         <td class="commandout"><div class="command"></div></td>
     </tr></table></div>
+
+    <table><tr class="assist_line"><td style="width:170px"><a class="map"></a></td><td style="width:250px"><a class="mod"></a></td></tr></table>
 </div>
 
 <div id="general">
     <a id="config" href="javascript:void(0)"><span class="emoji">⚙️</span>设置</a>
+    <a id="show_assist" href="javascript:void(0)"><span class="emoji">👀</span><span id="show_assist_statu">显示</span>全部图池指令</a>
     <hr>
     <a id="export" href="javascript:void(0)"><span class="emoji">💾</span>保存比赛记录</a>
     <hr>
@@ -388,6 +399,9 @@ a:hover{
     <div class="command"></div>
 </div>
 <div id="main">
+</div>
+<div id="assistout" class="hidden">
+    <table id="assist"></table>
 </div>
 </div>
 <script type="text/javascript">
@@ -473,8 +487,23 @@ function esc(s){
 }
 const main=document.getElementById('main')
 const general=document.getElementById('general')
+const assistout=document.getElementById('assistout')
+const assist=document.getElementById('assist')
 const configui=document.getElementById('configui')
 let config=null
+let showAssist=false
+document.getElementById('show_assist').onclick=function(){
+    if(showAssist){
+        showAssist=false
+        document.getElementById('show_assist_statu').textContent='显示'
+        assistout.classList.add('hidden')
+    }else{
+        showAssist=true
+        document.getElementById('show_assist_statu').textContent='隐藏'
+        assistout.classList.remove('hidden')
+    }
+}
+const assistLine=document.getElementsByClassName('assist_line')[0]
 
 // 复制命令
 {
@@ -871,6 +900,22 @@ function init(){
 
     events=[]
     while(main.firstChild)main.removeChild(main.firstChild)
+    //while(assist.firstChild)assist.removeChild(assist.firstChild)
+
+    for(map in config.pool){
+        let nl=assistLine.cloneNode(true)
+
+        let ncMap=nl.getElementsByClassName('map')[0]
+        ncMap.setAttribute('href','javascript:void(0)')
+        ncMap.setAttribute('onclick','copyText(this)')
+        ncMap.innerHTML=`!MP MAP ${config.pool[map].bid}`
+        let ncMod=nl.getElementsByClassName('mod')[0]
+        ncMod.setAttribute('href','javascript:void(0)')
+        ncMod.setAttribute('onclick','copyText(this)')
+        ncMod.innerHTML=`!MP MODS ${config.pool[map].mod}`
+
+        assist.appendChild(nl)
+    }
 
     addEvent('startup')
     for(event of config.events){
