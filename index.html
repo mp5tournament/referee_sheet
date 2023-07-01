@@ -8,48 +8,45 @@
 const tournament={name:null,nickname:null,tbPickable:null,tbPickable:null,tbOnlyOne:null,teamPlayingSize:null,teamData:null,rounds:null,poolMod:null,poolSymbol:null}
 // 锦标赛设置
 tournament.rounds={
+
 第一轮:{events:'bppppt',pool:{
 NM:
 `
-2403946
-3714369
-2284217
-1566637
-4099127
-3646485
+3523924
+1981952
+915779
+3284636
+2897131
 `.trim().split('\n'),
 HD:
 `
-1755526
-361688
-3171555
+3582060
+2730772
 `.trim().split('\n'),
 HR:
 `
-1559935
-2980264
+2530278
+822482
 `.trim().split('\n'),
 DT:
 `
-876674
-421129
-2610813
-924562
+2075061
+2896899
+3096848
 `.trim().split('\n'),
 FM:
 `
-1853842
-1865143
-2012588
+3634652
+3432912
 `.trim().split('\n'),
 TB:
 `
-1294192
-1045757
-3205625
+1771678
+1766514
+2077290
 `.trim().split('\n'),
-        }
-    },
+}},
+
 第二轮:{events:'bpppppt',pool:{
 NM:
 `
@@ -90,8 +87,8 @@ TB:
 1045757
 3205625
 `.trim().split('\n'),
-        }
-    },
+}},
+
 第三轮:{events:'bppppppt',pool:{
 NM:
 `
@@ -132,14 +129,19 @@ TB:
 1045757
 3205625
 `.trim().split('\n'),
-        }
-    },
+}},
+
 }
 
 tournament.teamData=`
-辉辉老阿姨的后宫团	BurgerKing	Boring666	Stick_Fish	tangkeke71	Kevin0036	MizukiQwQ
-绿色健康萌萌乐	kukupa	[Paw]OchiKouri	natsume umi	the origin	qianli1611	Glacc
-无所谓，neuro会代打	LunaCracker	Saikaisa	[W]hiteRBQ 033	Fungus OVO	pip233	misaki daisuki
+My Angel AnthV	My Angel AnthV	nangelailin	l2883119	Aitsuki Nakuru	Yelech	Fyu_Neru	TorBro	Fungus OVO
+泡面好吃	Dana Iclucia	itsushini	ShandenAquine	SakurakoujiRuna	_Yukinoshita	Spell	mike233333	sans8
+墨樱君与七人魔男	Ink_Sakura	1233a	JunMoyan	-XiAoyu	Arca Lunar	Ayaaaachi	innnnovation	Hinanawi Momoko
+幻想乡第二广播体操	[W]hiteRBQ 033	Marisaya	Hinanawi Tenshi	Summ3rR41n	misaki daisuki	pip233	miyes	Sakura Luna
+大哥哥杂鱼~	Edmound	hvick518	Ye Liang Chen	Niumaokun	CNjoin	FlyingYellow	SansX	MAPSILL
+请ban小海豚谢谢	Liliaceae213	Trecont	Arkshine	tangkeke71	Folinic	Rikka9	sion22	XiaoLan9999
+玩ba玩的	Misnel_233	1 zero	-Mahiro	RUIICE	wjs255	C8N16O32	zhuiyi_crane	cai1
+路人玩家的养成办法	SpaceSkyNet	feschen	0x1C0701C1	Kito_Cedon	fate80016	FreakMao_plum	[Lilywhite]	AltoClef
 `.trim().split('\n')
 
 tournament.name='MP5 Mystic Arena'
