@@ -142,9 +142,9 @@ tournament.teamData=`
 路人玩家的养成办法	SpaceSkyNet	feschen	0x1C0701C1	Kito_Cedon	fate80016	FreakMao_plum	[Lilywhite]	AltoClef
 `.trim().split('\n')
 
-tournament.name='MP5 Mystic Arena'
+tournament.name='第十九届MP5杯'
 
-tournament.nickname='MP5MA'
+tournament.nickname='MP5S19'
     
 tournament.tbPickable=true
 
@@ -492,6 +492,7 @@ const part={
     startup:[
         `!MP MAKE ${tournament.nickname}: ({red}) vs ({blue})`,
         '!MP SET 2 3',
+        '!MP MAP {tb_bid}',
         '!MP INVITE {red_cap}',
         '!MP INVITE {blue_cap}',
         '!MP ADDREF',
@@ -544,10 +545,6 @@ const part={
         '!MP START 7',
         '!MP START 5',
         '!MP ABORT',
-        '',
-        '前4局比赛结束，接下来将通过roll点确定本场比赛后面的魔法。',
-        '接下来两局的魔法是：',
-        '本局的魔法依然是：',
     ]
 }
 
@@ -730,6 +727,15 @@ const assistLine=document.getElementsByClassName('assist_line')[0]
                 pool[mod]={bid:round.pool[mod][0],mod:tournament.poolMod[mod],pickable}
             }
         }
+
+        let tb=null
+        if(pool.TB) tb=pool.TB.bid
+        else if(pool.TB1) tb=pool.TB1.bid
+        else for(let map in pool){
+            tb=pool[map].bid
+            break
+        }
+
         config={
             round:c_round.value,
             red:{
@@ -743,6 +749,7 @@ const assistLine=document.getElementsByClassName('assist_line')[0]
             events:round.events,
             gamestowin:round.events.replace('b','').length,
             pool,
+            tb,
         }
     }
 }
@@ -981,6 +988,7 @@ function init(){
     changeAll(document,'round',config.round)
     changeAll(document,'red',config.red.name)
     changeAll(document,'blue',config.blue.name)
+    changeAll(document,'tb_bid',config.tb)
     changeAll(document,'red_cap',config.red.cap)
     changeAll(document,'blue_cap',config.blue.cap)
 
