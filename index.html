@@ -8,137 +8,77 @@ const tournament={name:null,nickname:null,tbPickable:null,tbPickable:null,tbOnly
 // 锦标赛设置
 tournament.rounds={
 
-第一轮:{events:'bpbpppt',pool:{
+小组赛（一）:{events:'bpbpppt',pool:{
 NM:
 `
-3523924
-1981952
-915779
-3284636
-2897131
+3758092
+282166
+3000876
+3662268
+3645147
 `.trim().split('\n'),
 HD:
 `
-3582060
-2730772
+2414561
+3997463
 `.trim().split('\n'),
 HR:
 `
-2530278
-822482
+3951806
+3053092
 `.trim().split('\n'),
 DT:
 `
-2075061
-2896899
-3096848
+4172540
+4000582
+3916719
 `.trim().split('\n'),
 FM:
 `
-3634652
-3432912
+799785
+415218
 `.trim().split('\n'),
 TB:
 `
-1771678
-1766514
-2077290
-`.trim().split('\n'),
-}},
-/*
-第二轮:{events:'bpbppppt',pool:{
-NM:
-`
-784411
-2771080
-2709008
-2999280
-1056686
-2810141
-`.trim().split('\n'),
-HD:
-`
-2770120
-3004063
-4065818
-`.trim().split('\n'),
-HR:
-`
-2612976
-2354197
-`.trim().split('\n'),
-DT:
-`
-178095
-2325396
-3034527
-`.trim().split('\n'),
-FM:
-`
-1511836
-3411754
-`.trim().split('\n'),
-TB:
-`
-2801149
-1751858
-2354377
+3496410
 `.trim().split('\n'),
 }},
 
-第三轮:{events:'bpbpppppt',pool:{
+/*
+轮次名:{events:'bpbppppt',pool:{
 NM:
 `
-2404339
-2706393
-1385941
-2044547
-4214462
-3477124
 `.trim().split('\n'),
 HD:
 `
-3200526
-3563737
-2856570
 `.trim().split('\n'),
 HR:
 `
-2501757
-2291779
 `.trim().split('\n'),
 DT:
 `
-611679
-210696
-3751244
-2125040
 `.trim().split('\n'),
 FM:
 `
-3883278
-3755065
-2069551
 `.trim().split('\n'),
 TB:
 `
-1052795
-1601943
-1795090
 `.trim().split('\n'),
 }},
 */
 }
 
 tournament.teamData=`
-喂喂冲完…记得洗手啊	My Angel AnthV	nangelailin	l2883119	Aitsuki Nakuru	Yelech	Fyu_Neru	TorBro	Fungus OVO
-泡面好吃	Dana Iclucia	itsushini	ShandenAquine	SakurakoujiRuna	_Yukinoshita	Spell	mike233333	sans8
-墨樱君与七人魔男	Ink_Sakura	1233a	JunMoyan	-XiAoyu	Arca Lunar	Ayaaaachi	innnnovation	Hinanawi Momoko
-幻想乡第二广播体操	[W]hiteRBQ 033	Marisaya	Hinanawi Tenshi	Summ3rR41n	misaki daisuki	pip233	miyes	Sakura Luna
-大哥哥杂鱼~	Edmound	hvick518	Ye Liang Chen	Niumaokun	CNjoin	FlyingYellow	SansX	MAPSILL
-请ban小海豚谢谢	Liliaceae213	Trecont	Arkshine	tangkeke71	Folinic	Rikka9	sion22	XiaoLan9999
-玩ba玩的	Misnel_233	1 zero	-Mahiro	RUIICE	wjs255	C8N16O32	zhuiyi_crane	cai1
-路人玩家的养成办法	SpaceSkyNet	feschen	0x1C0701C1	Kito_Cedon	fate80016	FreakMao_plum	[Lilywhite]	AltoClef
+牛毛老师和她的后宫团	suzuka1	Naaahida	qimengxunkong	alkali_earth	Niumaokun	TomCh
+B	ssd1048576	Zh_Jk	Shiratori	mura sama	RandomPsion	mike233333
+復仇者聯盟	miltonfs	fate80016	dogdog_OwO	-aLIEz-	Peter_Parker	Pain boy
+傲娇电子魅魔_	[Satori]	Liliaceae213	ArleneRain_	pip233	aspler big fan	Avogadoll
+只会啊啊啊啊啊啊啊啊	CPDD	Meyeu	Eystia	liout	MyAngel Adachi	Hinanawi Momoko
+不想上早八	Hypnotic233	Graphical	wjs255	ovovocjj	K45en	KiraKiraAyu
+It's MeowGO!!!!!	Arca Lunar	Fyu_Neru	Douyazi	kotor1QAQ	FelxMy	- E C -
+名字	Kotoki	[W]hiteRBQ 033	FreakMao_plum	Kieost	eric1388	Fungus OVO
+不想当队长哼啊啊啊	Misnel_233	Kito_Cedon	OEIID	NineSummer	[Lilywhite]	nullable
+J	TakagiMori	[ATRI]	CNjoin	shigure_rino	kukupa	FlyingZxian
 `.trim().split('\n')
 
 tournament.name='第十九届MP5杯'
@@ -149,7 +89,7 @@ tournament.tbPickable=false
 
 tournament.tbOnlyOne=true
     
-tournament.teamPlayingSize=4
+tournament.teamPlayingSize=3
 
 tournament.poolMod={
     NM:'NF',
