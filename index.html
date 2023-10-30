@@ -686,7 +686,7 @@ const assistLine=document.getElementsByClassName('assist_line')[0]
                 cap:c_blue.cap.value,
             },
             events:round.events,
-            gamestowin:round.events.replace('b','').length,
+            gamestowin:round.events.replaceAll('b','').length,
             pool,
             tb,
         }
