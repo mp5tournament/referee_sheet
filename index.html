@@ -725,7 +725,7 @@ const assistLine=document.getElementsByClassName('assist_line')[0]
                 pool[mod+(parseInt(i)+1)]={bid:round.pool[mod][i],mod:tournament.poolMod[mod],symbol:tournament.poolSymbol[mod],pickable}
             }
             if(round.pool[mod].length==1){
-                pool[mod]={bid:round.pool[mod][0],mod:tournament.poolMod[mod],pickable}
+                pool[mod]={bid:round.pool[mod][0],mod:tournament.poolMod[mod],symbol:tournament.poolSymbol[mod],pickable}
             }
         }
 
@@ -995,7 +995,6 @@ function init(){
 
     events=[]
     while(main.firstChild)main.removeChild(main.firstChild)
-    //while(assist.firstChild)assist.removeChild(assist.firstChild)
 
     assist.innerHTML=''
     for(map in config.pool){
