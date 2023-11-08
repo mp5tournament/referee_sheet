@@ -95,6 +95,81 @@ tournament.poolSymbol={
     FM:'🔵',
     TB:'🟢',
 }
+
+// 处理图池
+{
+    const modAltNameDict={
+        NM:[
+            'nm',
+            'nomod',
+            'no mod',
+            'none',
+        ],
+        HD:[
+            'hd',
+            'hidden',
+        ],
+        HR:[
+            'hr',
+            'hardrock',
+            'hard rock',
+        ],
+        DT:[
+            'dt',
+            'doubletime',
+            'double time',
+        ],
+        FM:[
+            'fm',
+            'free',
+            'froce',
+            'free mod',
+            'froce mod',
+            'freemod',
+            'frocemod',
+        ],
+        TB:[
+            'tb',
+            'tiebreaker',
+            'tie breaker',
+        ],
+        EZ:[
+            'ez',
+            'easy',
+        ],
+        FL:[
+            'fl',
+            'flashlight',
+            'flash light',
+        ],
+        HT:[
+            'ht',
+            'halftime',
+            'half time',
+        ]
+    }
+    let modAltName={}
+    for(let mod in modAltNameDict)
+        for(let altName of modAltNameDict[mod])
+            modAltName[altName]=mod
+
+    for(let round in tournament.rounds){
+        let pool={}
+        let mod='NM'
+        for(word of tournament.rounds[round].pool.split(/[\n\t]/)){
+            word=word.trim()
+            if(!word)continue
+            if(word.match(/^-?\d+$/)){
+                if(!(mod in pool))pool[mod]=[]
+                pool[mod].push(word)
+            }else{
+                altName=word.toLowerCase()
+                mod=(altName in modAltName)?modAltName[altName]:word
+            }
+        }
+        tournament.rounds[round].pool=pool
+    }
+}
 </script>        
 <style>
 .hidden{
@@ -509,81 +584,6 @@ document.getElementById('show_assist').onclick=function(){
     }
 }
 const assistLine=document.getElementsByClassName('assist_line')[0]
-
-// 处理图池
-{
-    const modAltNameDict={
-        NM:[
-            'nm',
-            'nomod',
-            'no mod',
-            'none',
-        ],
-        HD:[
-            'hd',
-            'hidden',
-        ],
-        HR:[
-            'hr',
-            'hardrock',
-            'hard rock',
-        ],
-        DT:[
-            'dt',
-            'doubletime',
-            'double time',
-        ],
-        FM:[
-            'fm',
-            'free',
-            'froce',
-            'free mod',
-            'froce mod',
-            'freemod',
-            'frocemod',
-        ],
-        TB:[
-            'tb',
-            'tiebreaker',
-            'tie breaker',
-        ],
-        EZ:[
-            'ez',
-            'easy',
-        ],
-        FL:[
-            'fl',
-            'flashlight',
-            'flash light',
-        ],
-        HT:[
-            'ht',
-            'halftime',
-            'half time',
-        ]
-    }
-    let modAltName={}
-    for(let mod in modAltNameDict)
-        for(let altName of modAltNameDict[mod])
-            modAltName[altName]=mod
-
-    for(let round in tournament.rounds){
-        let pool={}
-        let mod='NM'
-        for(word of tournament.rounds[round].pool.split(/[\n\t]/)){
-            word=word.trim()
-            if(!word)continue
-            if(word.match(/^-?\d+$/)){
-                if(!(mod in pool))pool[mod]=[]
-                pool[mod].push(word)
-            }else{
-                altName=word.toLowerCase()
-                mod=(altName in modAltName)?modAltName[altName]:word
-            }
-        }
-        tournament.rounds[round].pool=pool
-    }
-}
 
 // 复制命令
 {
