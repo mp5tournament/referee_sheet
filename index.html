@@ -7,64 +7,51 @@
 const tournament={name:null,nickname:null,tbPickable:null,tbPickable:null,tbOnlyOne:null,teamPlayingSize:null,teamData:null,rounds:null,poolMod:null,poolSymbol:null}
 // 锦标赛设置
 tournament.rounds={
+'小组赛（一）':{events:'bpbpppt',pool:`
+No Mod	3758092
+	282166
+	3000876
+	3662268
+	3645147
+Hidden	2414561
+	3997463
+Hard Rock	3951806
+	3053092
+Double Time	4172540
+	4000582
+	3916719
+Free Mod	799785
+	415218
+Tiebreaker	3496410
+`},
 
-'小组赛（一）':{events:'bpbpppt',pool:{
-NM:
-`
-3758092
-282166
-3000876
-3662268
-3645147
-`.trim().split('\n'),
-HD:
-`
-2414561
-3997463
-`.trim().split('\n'),
-HR:
-`
-3951806
-3053092
-`.trim().split('\n'),
-DT:
-`
-4172540
-4000582
-3916719
-`.trim().split('\n'),
-FM:
-`
-799785
-415218
-`.trim().split('\n'),
-TB:
-`
-3496410
-`.trim().split('\n'),
-}},
-
+'小组赛（二）':{events:'bpbpppt',pool:`
+No Mod	2400815
+	1620228
+	4358386
+	3493603
+	4282790
+Hidden	4214410
+	1475945
+Hard Rock	2906448
+	3785904
+Double Time	3999998
+	2813833
+	3426179
+Free Mod	1657926
+	4045756
+Tiebreaker	3369939
+`},
+    
 /*
-'轮次名':{events:'bpbppppt',pool:{
-NM:
-`
-`.trim().split('\n'),
-HD:
-`
-`.trim().split('\n'),
-HR:
-`
-`.trim().split('\n'),
-DT:
-`
-`.trim().split('\n'),
-FM:
-`
-`.trim().split('\n'),
-TB:
-`
-`.trim().split('\n'),
-}},
+'':{events:'bpbpppt',pool:`
+
+`},
+*/
+/*
+'轮次名':{events:'bpbpppt',pool:`
+一般来说直接复制图池表的mod+bid部分即可
+`},
 */
 }
 
@@ -522,6 +509,81 @@ document.getElementById('show_assist').onclick=function(){
     }
 }
 const assistLine=document.getElementsByClassName('assist_line')[0]
+
+// 处理图池
+{
+    const modAltNameDict={
+        NM:[
+            'nm',
+            'nomod',
+            'no mod',
+            'none',
+        ],
+        HD:[
+            'hd',
+            'hidden',
+        ],
+        HR:[
+            'hr',
+            'hardrock',
+            'hard rock',
+        ],
+        DT:[
+            'dt',
+            'doubletime',
+            'double time',
+        ],
+        FM:[
+            'fm',
+            'free',
+            'froce',
+            'free mod',
+            'froce mod',
+            'freemod',
+            'frocemod',
+        ],
+        TB:[
+            'tb',
+            'tiebreaker',
+            'tie breaker',
+        ],
+        EZ:[
+            'ez',
+            'easy',
+        ],
+        FL:[
+            'fl',
+            'flashlight',
+            'flash light',
+        ],
+        HT:[
+            'ht',
+            'halftime',
+            'half time',
+        ]
+    }
+    let modAltName={}
+    for(let mod in modAltNameDict)
+        for(let altName of modAltNameDict[mod])
+            modAltName[altName]=mod
+
+    for(let round in tournament.rounds){
+        let pool={}
+        let mod='NM'
+        for(word of tournament.rounds[round].pool.split(/[\n\t]/)){
+            word=word.trim()
+            if(!word)continue
+            if(word.match(/^-?\d+$/)){
+                if(!(mod in pool))pool[mod]=[]
+                pool[mod].push(word)
+            }else{
+                altName=word.toLowerCase()
+                mod=(altName in modAltName)?modAltName[altName]:word
+            }
+        }
+        tournament.rounds[round].pool=pool
+    }
+}
 
 // 复制命令
 {
