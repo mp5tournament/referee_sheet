@@ -7,81 +7,24 @@
 const tournament={name:null,nickname:null,tbPickable:null,tbPickable:null,tbOnlyOne:null,teamPlayingSize:null,teamData:null,rounds:null,poolMod:null,poolSymbol:null}
 // 锦标赛设置
 tournament.rounds={
-'小组赛（一）':{events:'bpbpppt',pool:`
-No Mod	2330974
-	4511617
-	3333444
-	2869374
-	4384668
-Hidden	4386009
-	284207
-Hard Rock	2806422
-	4518967
-Double Time	874356
-	3884996
-	2894927
-Free Mod	2061862
-	3764210
-Tiebreaker	1292770
-`},
-'小组赛（二）':{events:'bpbpppt',pool:`
-No Mod	4172597
-	4286572
-	1560218
-	3266657
-	3318542
-Hidden	3617083
-	4323252
-Hard Rock	3203389
-	4453874
-Double Time	4530840
-	4531112
-	4290435
-Free Mod	104414
-	1429975
-Tiebreaker	4330411
-`},
-'淘汰赛':{events:'bpbppppt',pool:`
-No Mod	4297781
-	4549333
-	3644254
-	4549343
-	4197530
-	3311067
-Hidden	1864006
-	2997437
-	3339212
-Hard Rock	1517726
-	1021024
-	2857598
-Double Time	4549373
-	687524
-	3888678
-Free Mod	2428493
-	2236445
-Tiebreaker	3893423
-`},
-'决赛':{events:'bpbpppppt',pool:`
-No Mod	2999335
-	2477065
-	4064603
-	3478971
-	4558692
-	4183443
-Hidden	4362192
-	2755563
-	3783213
-Hard Rock	4148850
-	1877452
-	2888273
-Double Time	543814
-	4558717
-	4389199
-	930016
-Free Mod	3360033
-	4558681
-	1697754
-Tiebreaker	894409
+'第一轮':{events:'bpbpppt',pool:`
+No Mod	3620094
+	4672955
+	3099518
+	4601127
+	4392407
+Hidden	4502105
+	230692
+Hard Rock	1558497
+	3731617
+Double Time	4673085
+	4569095
+	4090460
+Free Mod	4180123
+	2724745
+Tiebreaker	3127057
+	4152865
+	809513
 `},
 
 /*
@@ -98,27 +41,25 @@ Tiebreaker	894409
 }
 
 tournament.teamData=`
-进击的中人完结篇后篇	Shiratori	MyAngelMizuki_	Arca Lunar	feschen	Fyu_Neru	sodarose
-远子救我口呀	Mimori	USAIKO	Senbe1	xiao ming	[SomaRia]	mike233333
-我是超级老登	zhuiyi_crane	Fungus OVO	Angel_CYCLC	misnel_233	Kito_Cedon	LaidBear
-月球方舟	Liliaceae213	ElectroTD	Pain boy	a_huang1	Kyle Y	Folinic
-君のO神は本当に上手	Asatsuki Sakura	cloudland	Naaahida	-Rosmontis-	qazoop	iFroze-
-妈逼的你好厉害	X Light	Graphical	Lunequin	[W]hiteRBQ 033	Edmound	ovovocjj
-月乃厨	Maihama Alice	lost chair	lingjiang	-XiAoyu	Hinanawi Momoko	FeD4kTo
-¿	RuanWhite	babyvzzz	yaddrx2	Sonofoi	eric1388	[ sky star ]
-意外火灾	1 zero	Altina-orian	rabbit emperor	mura sama	Atahana	nullable
-没人要	Ye Liang Chen	6dl_	cd20200816	Eystia	Innocence_	[Ayanami]
+¡iIl!!lIi¡	Romen	Sonofoi	RuanWhite	eric1388	feschen	AltoClef	MyAngelMio_	MyAngelYuzu_
+我喜欢你,UUZ 	Hinanawi Momoko	My Angel Kuroe	Yuriha	Mimori	Mouse1337	Nakedsoul	ILOVEUUZ	chanliuko
+月球皮划艇mab号	ssd1048576	iFroze	My Angel Bronya	TomCh	Asatsuki Sakura	sodarose	mike233333	AmamiyaRena
+龙龙公主和七个猫猫虫	My Angel AnthV	nangelailin	QianLi1611	l2883119	Fyu_Neru	zhuiyi_crane	xiao ming	Fungus OVO
+月球方舟萨托利号	ElectroTD	[Satori]	a_huang1	Avogadoll	Folinic	Pain boy	AeCw	Alymetic
+恭喜月球方舟获得冠军	X Light	qazoop	Blackblock_inc	Zer0Tw222	canying1207	atakei hisa	Proxyerium	C8N16O32
+G	Senbe1	LomOmon	OEIID	Rikka9	Atahana	Claiseumy	ASTOP	subaru322
+H	[Lilywhite]	astralrain	CNjoin	7enf	H4ppy_n3w_y34r	qiao_liang	Starfeather2007	Neko OvO
 `.trim().split('\n')
 
-tournament.name='第二十届MP5杯'
+tournament.name='MP5 Mystic Arena II'
 
-tournament.nickname='MP5S20'
+tournament.nickname='MP5MA2'
     
-tournament.tbPickable=false
+tournament.tbPickable=true
 
-tournament.tbOnlyOne=true
+tournament.tbOnlyOne=false
     
-tournament.teamPlayingSize=3
+tournament.teamPlayingSize=4
 
 tournament.poolMod={
     NM:'NF',
