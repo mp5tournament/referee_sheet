@@ -7,70 +7,22 @@
 const tournament={name:null,nickname:null,tbPickable:null,tbPickable:null,tbOnlyOne:null,teamPlayingSize:null,teamData:null,rounds:null,poolMod:null,poolSymbol:null}
 // 锦标赛设置
 tournament.rounds={
-'第一轮':{events:'bppppt',pool:`
-No Mod	3620094
-	4672955
-	3099518
-	4601127
-	4392407
-Hidden	4502105
-	230692
-Hard Rock	1558497
-	3731617
-Double Time	4673085
-	4569095
-	4090460
-Free Mod	4180123
-	2724745
-Tiebreaker	3127057
-	4152865
-	809513
-`},
-'第二轮':{events:'bpppppt',pool:`
-No Mod	3481361
-	4682537
-	818272
-	4565307
-	2111279
-	4181765
-Hidden	4391169
-	4132536
-	3148852
-Hard Rock	4471179
-	4103194
-	411785
-Double Time	4216014
-	4093504
-	1582581
-Free Mod	424415
-	4677800
-Tiebreaker	1812393
-	4355955
-	478605
-`},
-'第三轮':{events:'bppppppt',pool:`
-No Mod	4574845
-	3648077
-	4692350
-	3756543
-	3007673
-	1782568
-Hidden	3149420
-	1350672
-	2864972
-Hard Rock	4258134
-	4692829
-	3667381
-Double Time	2926414
-	1370137
-	2855311
-	3957529
-Free Mod	1680504
-	3662862
-	3182052
-Tiebreaker	3814837
-	2221799
-	1121504
+'瑞士轮（一）':{events:'bpbpppt',pool:`
+No Mod	3718752
+	4846725
+	3272915
+	4254807
+	4846752
+Hidden	4341641
+	1412812
+Hard Rock	4041002
+	3616922
+Double Time	944104
+	3664501
+	4331268
+Free Mod	136186
+	1522867
+Tiebreaker	3403189
 `},
 
 /*
@@ -87,25 +39,31 @@ Tiebreaker	3814837
 }
 
 tournament.teamData=`
-¡iIl!!lIi¡	Romen	Sonofoi	RuanWhite	eric1388	feschen	AltoClef	MyAngelMio_	MyAngelYuzu_
-我喜欢你,UUZ 	Hinanawi Momoko	My Angel Kuroe	Yuriha	Mimori	Mouse1337	Nakedsoul	ILOVEUUZ	chanliuko
-月球皮划艇mab号	ssd1048576	iFroze	My Angel Bronya	TomCh	Asatsuki Sakura	sodarose	mike233333	AmamiyaRena
-龙龙公主和七个猫猫虫	My Angel AnthV	nangelailin	QianLi1611	l2883119	Fyu_Neru	zhuiyi_crane	xiao ming	Fungus OVO
-月球方舟萨托利号	ElectroTD	[Satori]	a_huang1	Avogadoll	Folinic	Pain boy	AeCw	Alymetic
-恭喜月球方舟获得冠军	X Light	qazoop	Blackblock_inc	Zer0Tw222	canying1207	atakei hisa	Proxyerium	C8N16O32
-为什么参加MP5	Senbe1	LomOmon	OEIID	Rikka9	Atahana	Claiseumy	ASTOP	subaru322
-不要杀H的狗	[Lilywhite]	astralrain	CNjoin	7enf	H4ppy_n3w_y34r	qiao_liang	Starfeather2007	Neko OvO
+追忆的性价比队伍	zhuiyi_crane	Asatsuki Sakura	eric1388	Paraliesa	ArmorFlash	Lunequin
+你先开的	romen	- Ayaka -	yaddrx2	Spell	sodarose	MyAngelYuzu_
+22时，草神说话中	TomCh	MyAngelMizuki_	Avogadoll	ASTOP	Naaahida	qimengxunkong
+鸡肉蛋沙拉打叠卷	Pouxba	1 zero	ssd1048576	Asteroian	6dl_	dogdog_OwO
+晚安大伙	Neko Reset	ImbaDylan	atahana	[Curo]	-sussycat-	hiesimo
+一碗赌上屙屎生涯的饭	Ink_Sakura	JunMoyan	LukeWarmSuiPiss	xiao ming	mike233333	cd20200816
+未完成小队	l2883119	AeCw	Mukisa	Claiseumy	Lzq12345	gangkun1414
+看GBC看的	Nana Sakura	Gensokyo_Ori	dorchadasK	BBQ_Wheat	Doubi_wert	White_Sheep
+震撼猫猫.jpg	Akari Date	Kousaka Kirino	___eric___	[W]hiteRBQ 033	H4ppy_n3w_y34r	Dimago
+MP5之最后一5	X Light	touhou chef	ciaIIo	SzZzC	Luminis	Limax2371
+我有腱鞘炎	Mimori	PhantoMPaiN	pip233	[mogezi]	xX_DeSu_Xx	Eurika
+大明王朝1566	Yoizuki	toumakazusa	MizusawaMatsuri	-Capgras-	feschen	Koko_
+指望另一队	songwangfu	Phirida	mura sama	miaoha	404E	Reincarnation13
+小米su7	madlife_AA	Misnel_233	fate80016	astro angelfish	nullable	Tusk1527
 `.trim().split('\n')
 
-tournament.name='MP5 Mystic Arena II'
+tournament.name='第二十一届MP5杯'
 
-tournament.nickname='MP5MA2'
+tournament.nickname='MP5S21'
     
-tournament.tbPickable=true
+tournament.tbPickable=false
 
 tournament.tbOnlyOne=false
     
-tournament.teamPlayingSize=4
+tournament.teamPlayingSize=3
 
 tournament.poolMod={
     NM:'NF',
