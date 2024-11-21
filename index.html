@@ -683,9 +683,12 @@ const assistLine=document.getElementsByClassName('assist_line')[0]
         c_red.select.add(new Option(team[0],i))
         c_blue.select.add(new Option(team[0],i))
     }
+    let last_round=''
     for (round in tournament.rounds){
         c_round.add(new Option(round,round))
+        last_round=round
     }
+    c_round.value=last_round
 
     function autoSelect(team){
         let i=parseInt(team.select.value)
