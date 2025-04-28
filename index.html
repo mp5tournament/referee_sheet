@@ -261,13 +261,19 @@ body{
     overflow: auto;
     width:630px;
 }
-#assistout{
-    min-width:510px;
-    max-width:510px;
+#assist_pool_out, #assist_player_out{
     background-color: white;
     border-radius: 10px;
     box-shadow: 1px 1px 3px grey;
     padding:6px;
+}
+#assist_pool_out{
+    min-width:170px;
+    max-width:170px;
+}
+#assist_player_out{
+    min-width:212px;
+    max-width:212px;
 }
 table{
     font-size:18px;
@@ -511,14 +517,19 @@ a:hover{
         <td class="commandout"><div class="command"></div></td>
     </tr></table></div>
 
-    <table><tr class="assist_line"><td style="width:80px" class="pos"></td><td style="width:170px"><a class="map"></a></td><td style="width:250px"><a class="mod"></a></td></tr></table>
+    <table>
+        <tr class="assist_pool_line"><td style="width:80px" class="pos"></td><td style="width:50px"><a class="map"></a></td><td style="width:50px"><a class="mod"></a></td></tr>
+        <tr class="assist_player_line"><td style="width:200px"><a></a></td></tr>
+    </table>
 </div>
 
 <div id="general">
     <a id="config" href="javascript:void(0)"><span class="emoji">⚙️</span>设置</a>
-    <a id="show_assist" href="javascript:void(0)"><span class="emoji">👀</span><span id="show_assist_statu">显示</span>全部图池指令</a>
+    <a id="show_assist_pool" href="javascript:void(0)"><span class="emoji">👀</span><span id="show_assist_pool_statu">显示</span>全部图池指令</a>
+    <a id="show_assist_player" href="javascript:void(0)"><span class="emoji">👀</span><span id="show_assist_player_statu">显示</span>全部队员邀请指令</a>
     <hr>
     <a id="export" href="javascript:void(0)"><span class="emoji">💾</span>保存比赛记录</a>
+    <a id="copy_mainsheet_text" href="javascript:void(0)"><span class="emoji">📑</span>复制主表格信息</a>
     <hr>
     <div><span class="emoji">🏆</span><span class="v_tournament"></span></div>
     <div><span class="emoji">📌</span><span class="v_round"></span></div>
@@ -529,8 +540,11 @@ a:hover{
 </div>
 <div id="main">
 </div>
-<div id="assistout" class="hidden">
-    <table id="assist"></table>
+<div id="assist_pool_out" class="hidden">
+    <table id="assist_pool"></table>
+</div>
+<div id="assist_player_out" class="hidden">
+    <table id="assist_player"></table>
 </div>
 </div>
 <script type="text/javascript">
@@ -620,23 +634,38 @@ function esc(s){
 }
 const main=document.getElementById('main')
 const general=document.getElementById('general')
-const assistout=document.getElementById('assistout')
-const assist=document.getElementById('assist')
+const assistPoolOut=document.getElementById('assist_pool_out')
+const assistPool=document.getElementById('assist_pool')
+const assistPlayerOut=document.getElementById('assist_player_out')
+const assistPlayer=document.getElementById('assist_player')
 const configui=document.getElementById('configui')
 let config=null
-let showAssist=false
-document.getElementById('show_assist').onclick=function(){
-    if(showAssist){
-        showAssist=false
-        document.getElementById('show_assist_statu').textContent='显示'
-        assistout.classList.add('hidden')
+let showAssistPool=false
+let showAssistPlayer=false
+document.getElementById('show_assist_pool').onclick=function(){
+    if(showAssistPool){
+        showAssistPool=false
+        document.getElementById('show_assist_pool_statu').textContent='显示'
+        assistPoolOut.classList.add('hidden')
     }else{
-        showAssist=true
-        document.getElementById('show_assist_statu').textContent='隐藏'
-        assistout.classList.remove('hidden')
+        showAssistPool=true
+        document.getElementById('show_assist_pool_statu').textContent='隐藏'
+        assistPoolOut.classList.remove('hidden')
     }
 }
-const assistLine=document.getElementsByClassName('assist_line')[0]
+document.getElementById('show_assist_player').onclick=function(){
+    if(showAssistPlayer){
+        showAssistPlayer=false
+        document.getElementById('show_assist_player_statu').textContent='显示'
+        assistPlayerOut.classList.add('hidden')
+    }else{
+        showAssistPlayer=true
+        document.getElementById('show_assist_player_statu').textContent='隐藏'
+        assistPlayerOut.classList.remove('hidden')
+    }
+}
+const assistPoolLine=document.getElementsByClassName('assist_pool_line')[0]
+const assistPlayerLine=document.getElementsByClassName('assist_player_line')[0]
 
 // 复制命令
 {
@@ -646,10 +675,10 @@ const assistLine=document.getElementsByClassName('assist_line')[0]
         mouse.x = event.clientX
         mouse.y = event.clientY
     })
-    function copyText(x){
+    function copyText(x,y=null){
         const input = document.createElement('textarea')
         document.body.appendChild(input)
-        input.innerHTML = x.textContent
+        input.innerHTML = y || x.title || x.textContent
         input.select()
         document.execCommand('Copy')
         document.body.removeChild(input)
@@ -712,16 +741,20 @@ const assistLine=document.getElementsByClassName('assist_line')[0]
     const c_red={
         select:configui.getElementsByTagName('select')[0],
         name:configui.getElementsByClassName('name')[0].getElementsByClassName('red')[0],
-        cap:configui.getElementsByClassName('cap')[0].getElementsByClassName('red')[0]}
+        cap:configui.getElementsByClassName('cap')[0].getElementsByClassName('red')[0],
+        player:[],
+    }
     const c_blue={
         select:configui.getElementsByTagName('select')[1],
         name:configui.getElementsByClassName('name')[0].getElementsByClassName('blue')[0],
-        cap:configui.getElementsByClassName('cap')[0].getElementsByClassName('blue')[0]}
+        cap:configui.getElementsByClassName('cap')[0].getElementsByClassName('blue')[0],
+        player:[],
+    }
     const c_round=configui.getElementsByClassName('round')[0]
     const c_button=configui.getElementsByTagName('button')
     for (i in tournament.teamData){
         let team=tournament.teamData[i].split('\t')
-        tournament.teamData[i]={name:team[0],cap:team[1]}
+        tournament.teamData[i]={name:team[0],cap:team[1],player:team.slice(1)}
         let opt=document.createElement('option')
         opt.setAttribute('value',i)
         c_red.select.add(new Option(team[0],i))
@@ -739,9 +772,11 @@ const assistLine=document.getElementsByClassName('assist_line')[0]
         if (i<0){
             team.name.value=team==c_red?'🟥红队':'🟦蓝队'
             team.cap.value=''
+            team.player=[]
         }else{
             team.name.value=tournament.teamData[i].name
             team.cap.value=tournament.teamData[i].cap
+            team.player=tournament.teamData[i].player
         }
     }
     c_red.select.onchange=function(){
@@ -798,10 +833,12 @@ const assistLine=document.getElementsByClassName('assist_line')[0]
             red:{
                 name:c_red.name.value,
                 cap:c_red.cap.value,
+                player:c_red.player,
             },
             blue:{
                 name:c_blue.name.value,
                 cap:c_blue.cap.value,
+                player:c_blue.player,
             },
             events:round.events,
             gamestowin:round.events.replaceAll('b','').length,
@@ -866,6 +903,20 @@ const assistLine=document.getElementsByClassName('assist_line')[0]
             aTag.click()
             URL.revokeObjectURL(objectURL)
         }
+    }
+}
+
+{
+    document.getElementById('copy_mainsheet_text').onclick=function(){
+        if(!firstPick)return
+        let xxxxxxx=main.getElementsByClassName('meta')[0].getElementsByClassName('team')[0].value
+        const banList={red:[],blue:[]}
+        for(let partBan of main.getElementsByClassName('part ban'))if(!partBan.classList.contains('hidden')){
+            if(partBan.getElementsByClassName('map')[0].value)
+                (partBan.getElementsByClassName('v_color')[0].textContent=='蓝队'?banList.blue:banList.red)
+                    .push(partBan.getElementsByClassName('map')[0].value)
+        }
+        copyText(null,`${firstPick=='red'?'红队':'蓝队'}\t${banList.red.join(' ')}\t${banList.blue.join(' ')}`)
     }
 }
 
@@ -1052,23 +1103,40 @@ function init(){
     events=[]
     while(main.firstChild)main.removeChild(main.firstChild)
 
-    assist.innerHTML=''
+    assistPool.innerHTML=''
     for(map in config.pool){
-        let nl=assistLine.cloneNode(true)
+        let nl=assistPoolLine.cloneNode(true)
 
         let ncPos=nl.getElementsByClassName('pos')[0]
         ncPos.innerHTML=`${config.pool[map].symbol}${map}`
         let ncMap=nl.getElementsByClassName('map')[0]
         ncMap.setAttribute('href','javascript:void(0)')
         ncMap.setAttribute('onclick','copyText(this)')
-        ncMap.innerHTML=`!MP MAP ${config.pool[map].bid}`
+        ncMap.setAttribute('title',`!MP MAP ${config.pool[map].bid}`)
+        ncMap.innerHTML='MAP'
         let ncMod=nl.getElementsByClassName('mod')[0]
         ncMod.setAttribute('href','javascript:void(0)')
         ncMod.setAttribute('onclick','copyText(this)')
-        ncMod.innerHTML=`!MP MODS ${config.pool[map].mod}`
+        ncMod.setAttribute('title',`!MP MODS ${config.pool[map].mod}`)
+        ncMod.innerHTML='MOD'
 
-        assist.appendChild(nl)
+        assistPool.appendChild(nl)
     }
+
+    assistPlayer.innerHTML=''
+    function addAssistPlayerLine(player,pre=''){
+        let nl=assistPlayerLine.cloneNode(true)
+        let ncA=nl.getElementsByTagName('a')[0]
+        if(player){
+            ncA.setAttribute('href','javascript:void(0)')
+            ncA.setAttribute('onclick','copyText(this)')
+            ncA.setAttribute('title', `!MP INVITE ${player}`)
+        }
+        ncA.innerHTML=pre+player
+        assistPlayer.appendChild(nl)
+    }
+    for(player of config.red.player)addAssistPlayerLine(player,'🟥')
+    for(player of config.blue.player)addAssistPlayerLine(player,'🟦')
 
     addEvent('startup')
     for(event of config.events){
