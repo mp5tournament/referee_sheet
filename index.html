@@ -1135,8 +1135,8 @@ function init(){
         ncA.innerHTML=pre+player
         assistPlayer.appendChild(nl)
     }
-    for(player of config.red.player)addAssistPlayerLine(player,'🟥')
-    for(player of config.blue.player)addAssistPlayerLine(player,'🟦')
+    for(player of config.red.player)addAssistPlayerLine(player,'<span class="emoji">🟥</span>')
+    for(player of config.blue.player)addAssistPlayerLine(player,'<span class="emoji">🟦</span>')
 
     addEvent('startup')
     for(event of config.events){
