@@ -560,7 +560,7 @@ const part={
         `红队：{red}，1-${tournament.teamPlayingSize}楼；蓝队：{blue}，${tournament.teamPlayingSize+1}-${tournament.teamPlayingSize*2}楼`,
         '请双方队长roll点决定BP顺序，点大者先选，点小者先ban',
         '',
-        '先选方为{fp_t}',
+        '先选方为 {fp_t}，先ban方为 {fb_t}。',
     ],
     ban:[
         '请 {team} ban图',
@@ -980,7 +980,9 @@ function partOnChange(thisPart,n=null){
         }catch{}
 
         if(firstPick){
-            values.fp_t=config[firstPick].name
+            let firstBan=firstPick=='red'?'blue':'red'
+            values.fp_t=`${config[firstPick].name}（${firstPick=='red'?'红队':'蓝队'}）`
+            values.fb_t=`${config[firstBan].name}（${firstBan=='red'?'红队':'蓝队'}）`
             let x=firstPick=='red'?1:0
             for(i in events){
                 let y=null
