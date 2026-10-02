@@ -26,7 +26,6 @@ CA	5238831
 	364990
 TB	854972
 `},
-,
 
 /*
 '轮次名':{events:'bpbpppt',pool:`
@@ -71,15 +70,17 @@ tournament.poolMod={
     DT:'NF DT',
     FM:'NF FreeMod',
     TB:'NF FreeMod',
+	CA:'NF FreeMod',
 }
 
 tournament.poolSymbol={
     NM:'⚪',
-    HD:'🟡',
+    HD:'🟠',
     HR:'🔴',
     DT:'🟣',
     FM:'🔵',
     TB:'🟢',
+	CA:'🟡',
 }
 
 // 处理图池
@@ -132,7 +133,10 @@ tournament.poolSymbol={
             'ht',
             'halftime',
             'half time',
-        ]
+        ],
+		CA:[
+			'ca',
+		],
     }
     let modAltName={}
     for(let mod in modAltNameDict)
