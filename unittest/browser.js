@@ -97,7 +97,20 @@ async function startBrowser() {
     async close() {
       socket.close();
       child.kill();
-      fs.rmSync(profile, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
+      await new Promise(resolve => {
+        if (child.exitCode !== null) return resolve();
+        const timer = setTimeout(resolve, 1000);
+        child.once('exit', () => { clearTimeout(timer); resolve(); });
+      });
+      try {
+        await fs.promises.rm(profile, {
+          recursive: true, force: true, maxRetries: 20, retryDelay: 100,
+        });
+      } catch (error) {
+        // Chrome helpers can keep writing briefly after the parent exits.
+        // An undeleted temporary profile must not fail the application tests.
+        if (!['ENOTEMPTY', 'EBUSY', 'EPERM'].includes(error.code)) throw error;
+      }
     },
   };
 }
