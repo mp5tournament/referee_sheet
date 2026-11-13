@@ -21,4 +21,4 @@ jobs:
       - name: Run tests in Google Chrome
         env:
           CHROME_PATH: /usr/bin/google-chrome
-        run: node --test unittest/*.test.js
+        run: npm test

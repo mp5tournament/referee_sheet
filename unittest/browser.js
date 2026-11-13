@@ -2,7 +2,7 @@ const { spawn } = require('node:child_process');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
-const { pathToFileURL } = require('node:url');
+const { startServer } = require('../scripts/serve');
 
 // Tests run against the installed Google Chrome via Chrome DevTools Protocol.
 const chrome = [
@@ -16,7 +16,8 @@ const chrome = [
 async function startBrowser() {
   if (!chrome) throw new Error('Google Chrome is required. Set CHROME_PATH to chrome.exe if needed.');
   const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'referee-sheet-test-'));
-  const pageUrl = pathToFileURL(process.env.REFEREE_SHEET_HTML || path.resolve(__dirname, '..', 'index.html')).href;
+  const { server, url } = await startServer(path.resolve(__dirname, '..'));
+  const pageUrl = url;
   const child = spawn(chrome, [
     '--headless=new', '--disable-gpu', '--no-first-run', '--no-default-browser-check',
     '--disable-extensions', '--remote-debugging-port=0', '--remote-allow-origins=*',
@@ -116,6 +117,7 @@ async function startBrowser() {
         // An undeleted temporary profile must not fail the application tests.
         if (!['ENOTEMPTY', 'EBUSY', 'EPERM'].includes(error.code)) throw error;
       }
+      await new Promise(resolve => server.close(resolve));
     },
   };
 }

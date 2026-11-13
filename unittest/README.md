@@ -11,9 +11,9 @@
 在仓库根目录运行：
 
 ```powershell
-node --test unittest/*.test.js
+npm test
 ```
 
-测试框架使用 Node.js 内置的 `node:test` 和 Google Chrome 的 DevTools Protocol，无需安装 npm 包。需要 Node.js 22 或更新版本，以及 Google Chrome；不会使用 Edge 或其他浏览器。测试会启动无界面的 Chrome，直接加载仓库中的 `index.html`。
+测试框架使用 Node.js 内置的 `node:test` 和 Google Chrome 的 DevTools Protocol，无需安装 npm 包。需要 Node.js 22 或更新版本，以及 Google Chrome。测试会启动本地服务器和无界面的 Chrome，加载项目页面及 JSON 配置。
 
 如果 Chrome 不在常见安装路径，可设置 `CHROME_PATH` 指向 `chrome.exe` 后运行同一命令。

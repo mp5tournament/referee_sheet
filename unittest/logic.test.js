@@ -22,6 +22,25 @@ test('图池构建函数对单张和多张谱面分别命名', async () => {
   assert.deepEqual(result.TB.pickable, [false, false, true]);
 });
 
+test('配置校验拒绝缺失队伍和无效谱面 ID', async () => {
+  const result = await browser.evaluate(() => {
+    const source = structuredClone(tournament);
+    const missingTeams = structuredClone(source);
+    missingTeams.teamData = null;
+    const invalidBid = structuredClone(source);
+    Object.values(invalidBid.rounds)[0].pool.NM = ['not-an-id'];
+    const errors = [];
+    for (const value of [missingTeams, invalidBid]) {
+      try { normalizeTournament(value); }
+      catch (error) { errors.push(error.message); }
+    }
+    return errors;
+  });
+  assert.equal(result.length, 2);
+  assert.ok(result[0].includes('队伍'));
+  assert.ok(result[1].includes('图池'));
+});
+
 test('事件顺序与先选方分配可独立计算', async () => {
   const result = await browser.evaluate(() => {
     const types = eventTypesFromPattern('bpt');
