@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <title>MP5裁判表</title>
 <script type="text/javascript">
-const tournament={name:null,nickname:null,tbPickable:null,tbPickable:null,tbOnlyOne:null,teamPlayingSize:null,teamData:null,rounds:null,poolMod:null,poolSymbol:null}
+const tournament={name:null,nickname:null,tbPickable:null,tbOnlyOne:null,teamPlayingSize:null,teamData:null,rounds:null,poolMod:null,poolSymbol:null}
 // 锦标赛设置
 tournament.rounds={
 '瑞士轮（一）':{events:'bpbpppt',pool:`
@@ -157,27 +157,28 @@ tournament.poolSymbol={
 			'ca',
 		],
     }
-    let modAltName={}
-    for(let mod in modAltNameDict)
-        for(let altName of modAltNameDict[mod])
+    const modAltName={}
+    for(const mod in modAltNameDict)
+        for(const altName of modAltNameDict[mod])
             modAltName[altName]=mod
 
-    for(let round in tournament.rounds){
-        let pool={}
+    function parsePool(raw){
+        const pool={}
         let mod='NM'
-        for(word of tournament.rounds[round].pool.split(/[\n\t]/)){
-            word=word.trim()
+        for(const token of raw.split(/[\n\t]/)){
+            const word=token.trim()
             if(!word)continue
             if(word.match(/^-?\d+$/)){
                 if(!(mod in pool))pool[mod]=[]
                 pool[mod].push(word)
             }else{
-                altName=word.toLowerCase()
+                const altName=word.toLowerCase()
                 mod=(altName in modAltName)?modAltName[altName]:word
             }
         }
-        tournament.rounds[round].pool=pool
+        return pool
     }
+    for(const round of Object.values(tournament.rounds))round.pool=parsePool(round.pool)
 }
 </script>        
 <style>
@@ -587,7 +588,7 @@ const part={
 // 正文
 function changeAll(fatherNode,varName,text){
     text=esc(String(text))
-    for(node of fatherNode.getElementsByClassName('v_'+varName)) node.innerHTML=text
+    for(const node of fatherNode.getElementsByClassName('v_'+varName)) node.innerHTML=text
 }
 changeAll(document,'tournament',tournament.name)
 
@@ -608,29 +609,15 @@ const assistPlayerOut=document.getElementById('assist_player_out')
 const assistPlayer=document.getElementById('assist_player')
 const configui=document.getElementById('configui')
 let config=null
-let showAssistPool=false
-let showAssistPlayer=false
+function toggleAssist(panel,status){
+    const hidden=panel.classList.toggle('hidden')
+    status.textContent=hidden?'显示':'隐藏'
+}
 document.getElementById('show_assist_pool').onclick=function(){
-    if(showAssistPool){
-        showAssistPool=false
-        document.getElementById('show_assist_pool_statu').textContent='显示'
-        assistPoolOut.classList.add('hidden')
-    }else{
-        showAssistPool=true
-        document.getElementById('show_assist_pool_statu').textContent='隐藏'
-        assistPoolOut.classList.remove('hidden')
-    }
+    toggleAssist(assistPoolOut,document.getElementById('show_assist_pool_statu'))
 }
 document.getElementById('show_assist_player').onclick=function(){
-    if(showAssistPlayer){
-        showAssistPlayer=false
-        document.getElementById('show_assist_player_statu').textContent='显示'
-        assistPlayerOut.classList.add('hidden')
-    }else{
-        showAssistPlayer=true
-        document.getElementById('show_assist_player_statu').textContent='隐藏'
-        assistPlayerOut.classList.remove('hidden')
-    }
+    toggleAssist(assistPlayerOut,document.getElementById('show_assist_player_statu'))
 }
 const assistPoolLine=document.getElementsByClassName('assist_pool_line')[0]
 const assistPlayerLine=document.getElementsByClassName('assist_player_line')[0]
@@ -646,7 +633,7 @@ const assistPlayerLine=document.getElementsByClassName('assist_player_line')[0]
     function copyText(x,y=null){
         const input = document.createElement('textarea')
         document.body.appendChild(input)
-        input.innerHTML = y || x.title || x.textContent
+        input.value = y===null?(x.title||x.textContent):y
         input.select()
         document.execCommand('Copy')
         document.body.removeChild(input)
@@ -681,7 +668,7 @@ const assistPlayerLine=document.getElementsByClassName('assist_player_line')[0]
         let thisPart=document.getElementsByClassName(partName)[0]
         let commands=part[partName]
         let fatherNode=(partName=='general'?general:thisPart).getElementsByClassName('command')[0]
-        for(command of commands){
+        for(const command of commands){
             if(command){
                 let nc=document.createElement('a')
                 fatherNode.appendChild(nc)
@@ -699,10 +686,40 @@ const assistPlayerLine=document.getElementsByClassName('assist_player_line')[0]
         }
         part[partName]=thisPart
     }
-    for(partName in part)loadPart(partName)
+    for(const partName in part)loadPart(partName)
     if(tournament.tbOnlyOne)part.tb.getElementsByClassName('selectTB')[0].classList.add('hidden')
 }
 
+
+function buildPool(round,settings){
+    const pool={}
+    for(const mod in round.pool){
+        const pickable=mod=='TB'
+            ?[false,!!settings.tbPickable,true]
+            :[true,true,false]
+        round.pool[mod].forEach((bid,index)=>{
+            const name=round.pool[mod].length>1?mod+(index+1):mod
+            pool[name]={
+                bid,
+                mod:settings.poolMod[mod],
+                symbol:settings.poolSymbol[mod],
+                pickable,
+            }
+        })
+    }
+    return pool
+}
+
+function buildMatchConfig(settings,roundName,red,blue){
+    const round=settings.rounds[roundName]
+    const pool=buildPool(round,settings)
+    const tb=pool.TB?.bid||pool.TB1?.bid||Object.values(pool)[0]?.bid||null
+    return {
+        round:roundName,red,blue,events:round.events,
+        gamestowin:round.events.replaceAll('b','').length,
+        pool,tb,
+    }
+}
 
 // configui
 {
@@ -720,16 +737,14 @@ const assistPlayerLine=document.getElementsByClassName('assist_player_line')[0]
     }
     const c_round=configui.getElementsByClassName('round')[0]
     const c_button=configui.getElementsByTagName('button')
-    for (i in tournament.teamData){
+    for (const i in tournament.teamData){
         let team=tournament.teamData[i].split('\t')
         tournament.teamData[i]={name:team[0],cap:team[1],player:team.slice(1)}
-        let opt=document.createElement('option')
-        opt.setAttribute('value',i)
         c_red.select.add(new Option(team[0],i))
         c_blue.select.add(new Option(team[0],i))
     }
     let last_round=''
-    for (round in tournament.rounds){
+    for (const round in tournament.rounds){
         c_round.add(new Option(round,round))
         last_round=round
     }
@@ -769,131 +784,133 @@ const assistPlayerLine=document.getElementsByClassName('assist_player_line')[0]
     document.getElementById('config').onclick=function(){configui.classList.remove('hidden')}
 
     function reloadConfig(){
-        let round=tournament.rounds[c_round.value]
-        let pool={}
-        for(mod in round.pool){
-            let pickable=[false,false,false]
-            if(mod=='TB'){
-                pickable[2]=true
-                if(tournament.tbPickable)pickable[1]=true
-            }else{
-                pickable[0]=true
-                pickable[1]=true
-            }
-            if(round.pool[mod].length>1) for(i in round.pool[mod]){
-                pool[mod+(parseInt(i)+1)]={bid:round.pool[mod][i],mod:tournament.poolMod[mod],symbol:tournament.poolSymbol[mod],pickable}
-            }
-            if(round.pool[mod].length==1){
-                pool[mod]={bid:round.pool[mod][0],mod:tournament.poolMod[mod],symbol:tournament.poolSymbol[mod],pickable}
-            }
-        }
-
-        let tb=null
-        if(pool.TB) tb=pool.TB.bid
-        else if(pool.TB1) tb=pool.TB1.bid
-        else for(let map in pool){
-            tb=pool[map].bid
-            break
-        }
-
-        config={
-            round:c_round.value,
-            red:{
-                name:c_red.name.value,
-                cap:c_red.cap.value,
-                player:c_red.player,
-            },
-            blue:{
-                name:c_blue.name.value,
-                cap:c_blue.cap.value,
-                player:c_blue.player,
-            },
-            events:round.events,
-            gamestowin:round.events.replaceAll('b','').length,
-            pool,
-            tb,
-        }
+        config=buildMatchConfig(tournament,c_round.value,{
+            name:c_red.name.value,
+            cap:c_red.cap.value,
+            player:[...c_red.player],
+        },{
+            name:c_blue.name.value,
+            cap:c_blue.cap.value,
+            player:[...c_blue.player],
+        })
     }
 }
 
 // 保存比赛记录
-{
-    document.getElementById('export').onclick=function(){
-        if(!config)return
-        let =general.getElementsByClassName('v_tournament')[0].textContent
-        let mplink=events[0].dom.getElementsByTagName('input')[0].value.split('/')
-        for(i=mplink.length-1;i>=0;i--)if(mplink[i])
-        {
-            mplink=mplink[i]
-            break
-        }
-        mplink=typeof(mplink)=='string'?`https://osu.ppy.sh/community/matches/${mplink}\n`:''
-
-        let ban={红队:'🟥ban',蓝队:'🟦ban'}
-        let pick=''
-        let sr=''
-        let sb=''
-        let scmd=''
-        for(event of events){
-            if(event.dom.classList.contains('hidden'))continue
-            const cmd=event.dom.getElementsByClassName('textarea')[0].textContent
-            if(event.type=='startup'){
-                scmd=`${cmd?`（${cmd}）\n`:''}`
-            }else if(event.type=='ban'){
-                ban[event.color]+=` ${event.map=='0'?'空':event.map}${cmd?`（${cmd}）`:''}`
-            }else if(event.type=='pick'){
-                pick+=`${event.win=='red'?'🟥':'🟦'}|${event.color=='红队'?'🟥':'🟦'} ${event.map}${cmd?`（${cmd}）`:''}\n`
-            }else if(event.type=='tb'){
-                pick+=`${event.win=='red'?'🟥':'🟦'}|🟩 ${event.map}${cmd?`（${cmd}）`:''}\n`
-            }else if(event.type=='settle'){
-                sr=event.sr
-                sb=event.sb
-                pick+=`${sr>sb?`🟥${config.red.name}`:`🟦${config.blue.name}`}获胜！${cmd?`（${cmd}）`:''}\n`
-            }
-        }
-        ban=firstPick=='red'?`${ban['蓝队']}\n${ban['红队']}`:`${ban['红队']}\n${ban['蓝队']}`
-        title=`${tournament.name} ${config.round} ${config.red.name} vs ${config.blue.name}`
-        text=`${tournament.name} ${config.round} \n`
-            +`${mplink}\n`
-            +`${config.red.name} ${sr}:${sb} ${config.blue.name}\n${scmd}\n`
-            +ban
-            +`\n\n胜|选\n`
-            +pick
-
-        {
-            const blob = new Blob([text], {
-                type: 'text/plain;charset=utf-8'
-            })
-            const objectURL = URL.createObjectURL(blob)
-            const aTag = document.createElement('a')
-            aTag.href = objectURL
-            aTag.download = title+'.txt'
-            aTag.click()
-            URL.revokeObjectURL(objectURL)
-        }
-    }
+function normalizeMatchLink(input){
+    const id=String(input).split('/').filter(Boolean).at(-1)
+    return id?'https://osu.ppy.sh/community/matches/'+id+'\n':''
 }
 
-{
-    document.getElementById('copy_mainsheet_text').onclick=function(){
-        if(!firstPick)return
-        let xxxxxxx=main.getElementsByClassName('meta')[0].getElementsByClassName('team')[0].value
-        const banList={red:[],blue:[]}
-        for(let partBan of main.getElementsByClassName('part ban'))if(!partBan.classList.contains('hidden')){
-            if(partBan.getElementsByClassName('map')[0].value)
-                (partBan.getElementsByClassName('v_color')[0].textContent=='蓝队'?banList.blue:banList.red)
-                    .push(partBan.getElementsByClassName('map')[0].value)
+function formatMatchRecord(name,match,firstPick,matchLink,records){
+    const bans={红队:'🟥ban',蓝队:'🟦ban'}
+    let picks=''
+    let scoreRed=''
+    let scoreBlue=''
+    let startupNote=''
+    for(const record of records){
+        if(record.hidden)continue
+        const note=record.note?'（'+record.note+'）':''
+        if(record.type=='startup'){
+            startupNote=note?note+'\n':''
+        }else if(record.type=='ban'){
+            bans[record.color]+=' '+(record.map=='0'?'空':record.map)+note
+        }else if(record.type=='pick'){
+            picks+=(record.win=='red'?'🟥':'🟦')+'|'
+                +(record.color=='红队'?'🟥':'🟦')+' '+record.map+note+'\n'
+        }else if(record.type=='tb'){
+            picks+=(record.win=='red'?'🟥':'🟦')+'|🟩 '+record.map+note+'\n'
+        }else if(record.type=='settle'){
+            scoreRed=record.sr
+            scoreBlue=record.sb
+            picks+=(scoreRed>scoreBlue?'🟥'+match.red.name:'🟦'+match.blue.name)
+                +'获胜！'+note+'\n'
         }
-        copyText(null,`${firstPick=='red'?'红队':'蓝队'}\t${banList.red.join(' ')}\t${banList.blue.join(' ')}`)
     }
+    const banText=firstPick=='red'
+        ?bans['蓝队']+'\n'+bans['红队']
+        :bans['红队']+'\n'+bans['蓝队']
+    const title=name+' '+match.round+' '+match.red.name+' vs '+match.blue.name
+    const text=name+' '+match.round+' \n'
+        +normalizeMatchLink(matchLink)+'\n'
+        +match.red.name+' '+scoreRed+':'+scoreBlue+' '+match.blue.name+'\n'
+        +startupNote+'\n'+banText+'\n\n胜|选\n'+picks
+    return {title,text}
+}
+
+function formatMainSheetText(firstPick,bans){
+    const red=[]
+    const blue=[]
+    for(const ban of bans){
+        if(ban.hidden||!ban.map)continue
+        if(ban.color=='蓝队')blue.push(ban.map)
+        else red.push(ban.map)
+    }
+    return (firstPick=='red'?'红队':'蓝队')+'\t'+red.join(' ')+'\t'+blue.join(' ')
+}
+
+document.getElementById('export').onclick=function(){
+    if(!config)return
+    const records=events.map(event=>({
+        type:event.type,color:event.color,map:event.map,win:event.win,
+        sr:event.sr,sb:event.sb,
+        hidden:event.dom.classList.contains('hidden'),
+        note:event.dom.getElementsByClassName('textarea')[0].textContent,
+    }))
+    const matchLink=events[0].dom.getElementsByTagName('input')[0].value
+    const {title,text}=formatMatchRecord(tournament.name,config,firstPick,matchLink,records)
+    const blob=new Blob([text],{type:'text/plain;charset=utf-8'})
+    const objectURL=URL.createObjectURL(blob)
+    const anchor=document.createElement('a')
+    anchor.href=objectURL
+    anchor.download=title+'.txt'
+    anchor.click()
+    URL.revokeObjectURL(objectURL)
+}
+
+document.getElementById('copy_mainsheet_text').onclick=function(){
+    if(!firstPick)return
+    const bans=events.filter(event=>event.type=='ban').map(event=>({
+        color:event.color,map:event.dom.querySelector('select.map').value,
+        hidden:event.dom.classList.contains('hidden'),
+    }))
+    copyText(null,formatMainSheetText(firstPick,bans))
 }
 
 let events=[]
 let firstPick=null
 
 function allTrue(x){
-    for(i of x)if(!i)return false
+    for(const value of x)if(!value)return false
     return true
+}
+
+function eventTypesFromPattern(pattern){
+    const types=['startup']
+    for(const marker of pattern){
+        if(marker=='b')types.push('ban','ban')
+        else if(marker=='p')types.push('pick','pick')
+        else if(marker=='t')types.push('tb')
+    }
+    types.push('settle')
+    return types
+}
+
+function scoreAfter(previous,winner){
+    return {
+        sr:previous.sr+(winner=='red'?1:0),
+        sb:previous.sb+(winner=='blue'?1:0),
+    }
+}
+
+function turnAssignments(types,firstPick,redName,blueName){
+    const firstPickOffset=firstPick=='red'?1:0
+    return types.map((type,index)=>{
+        if(type!='ban'&&type!='pick')return null
+        const isBan=type=='ban'?1:0
+        const blue=!!((index&1)^firstPickOffset^isBan)
+        return {color:blue?'蓝队':'红队',team:blue?blueName:redName}
+    })
 }
 
 const firstPickRegulator=document.createElement('div')
@@ -906,138 +923,122 @@ function makeFinish(n,finish=true,settle=false){
     if(finish){
         event.finish=true
         if(settle){
-            for(i=n+1;i<l;i++)events[i].dom.classList.add('hidden')
+            for(let i=n+1;i<l;i++)events[i].dom.classList.add('hidden')
             events[l].sr=events[n].sr
             events[l].sb=events[n].sb
             partOnChange(null,l)
         }else partOnChange(null,n+1)
     }else{
         event.finish=false
-        for(i=n+1;i<=l;i++)events[i].dom.classList.add('hidden')
+        for(let i=n+1;i<=l;i++)events[i].dom.classList.add('hidden')
     }
+}
+
+function readEventSelection(event,settings){
+    const selects=event.dom.getElementsByTagName('select')
+    if(event.type=='startup')return {firstPick:selects[0].value}
+    if(event.type=='ban')return {map:selects[0].value}
+    if(event.type=='pick')return {map:selects[0].value,win:selects[1].value}
+    if(event.type=='tb')return {
+        map:settings.tbOnlyOne?(selects[0].options[1]?.value||''):selects[0].value,
+        win:selects[1].value,
+    }
+    return {}
+}
+
+function calculateEvent(event,previous,input,match,settings){
+    const values={}
+    let steps=[]
+    const state={}
+    if(event.type=='startup'){
+        state.sr=0
+        state.sb=0
+        if(input.firstPick){
+            const firstBan=input.firstPick=='red'?'blue':'red'
+            values.fp_t=match[input.firstPick].name
+                +'（'+(input.firstPick=='red'?'红队':'蓝队')+'）'
+            values.fb_t=match[firstBan].name
+                +'（'+(firstBan=='red'?'红队':'蓝队')+'）'
+        }
+        steps=[input.firstPick!='']
+    }else if(event.type=='ban'){
+        state.sr=previous.sr
+        state.sb=previous.sb
+        state.map=input.map
+        values.color=event.color
+        values.team=event.team
+        values.map=input.map
+        if(input.map)values.bid=input.map=='0'?'空':match.pool[input.map].bid
+        steps=[input.map!='']
+    }else if(event.type=='pick'||event.type=='tb'){
+        Object.assign(state,scoreAfter(previous,input.win))
+        state.map=input.map
+        state.win=input.win
+        values.map=input.map
+        values.win=input.win
+        values.sr=state.sr
+        values.sb=state.sb
+        if(event.type=='pick'){
+            values.color=event.color
+            values.team=event.team
+        }
+        if(input.map){
+            values.bid=match.pool[input.map].bid
+            values.mod=match.pool[input.map].mod
+        }
+        steps=event.type=='tb'&&settings.tbOnlyOne
+            ?[input.win!='']
+            :[input.map!='',input.win!='']
+    }else if(event.type=='settle'){
+        values.team=event.sr>event.sb?match.red.name:match.blue.name
+    }
+    return {state,values,steps}
 }
 
 function partOnChange(thisPart,n=null){
     if(n===null){
-        while(!thisPart.classList.contains('part')){
-            thisPart=thisPart.parentNode
-        }
-        for(i in events)if(events[i].dom==thisPart){
-            n=i
-            break
-        }
+        while(!thisPart.classList.contains('part'))thisPart=thisPart.parentNode
+        n=events.findIndex(item=>item.dom==thisPart)
     }
-    n=parseInt(n)
-    let event=events[n]
+    n=Number(n)
+    const event=events[n]
     event.dom.classList.remove('hidden')
-    let values={}
-    let steps=[]
+    const input=readEventSelection(event,tournament)
+
     if(event.type=='startup'){
-        window.onbeforeunload=function(){
-            return '确认要退出吗？'
-        }
-
-        event.sr=0
-        event.sb=0
-
-        firstPick=event.dom.getElementsByTagName('select')[0].value
-
+        window.onbeforeunload=function(){return '确认要退出吗？'}
+        firstPick=input.firstPick
         try{
-            if(firstPick=='red') main.insertBefore(firstPickRegulator,event.dom)
-            if(firstPick=='blue') main.removeChild(firstPickRegulator)
+            if(firstPick=='red')main.insertBefore(firstPickRegulator,event.dom)
+            if(firstPick=='blue')main.removeChild(firstPickRegulator)
         }catch{}
-
         if(firstPick){
-            let firstBan=firstPick=='red'?'blue':'red'
-            values.fp_t=`${config[firstPick].name}（${firstPick=='red'?'红队':'蓝队'}）`
-            values.fb_t=`${config[firstBan].name}（${firstBan=='red'?'红队':'蓝队'}）`
-            let x=firstPick=='red'?1:0
-            for(i in events){
-                let y=null
-                if(events[i].type=='ban')y=1
-                if(events[i].type=='pick')y=0
-                if(y===null)continue
-                events[i].color=i&1^x^y?'蓝队':'红队'
-                events[i].team=i&1^x^y?config.blue.name:config.red.name
+            const assignments=turnAssignments(
+                events.map(item=>item.type),firstPick,config.red.name,config.blue.name
+            )
+            for(const i in events){
+                if(!assignments[i])continue
+                events[i].color=assignments[i].color
+                events[i].team=assignments[i].team
             }
         }
-
-        steps=[firstPick!='']
-    } else if(event.type=='ban'){
-        event.sr=events[n-1].sr
-        event.sb=events[n-1].sb
-
-        values.color=event.color
-        values.team=event.team
-        values.map=event.dom.getElementsByTagName('select')[0].value
-        event.map=values.map
-        if(values.map){
-            values.bid=values.map=='0'?'空':config.pool[values.map].bid
-        }
-
-        steps=[values.map!='']
-    } else if(event.type=='pick'){
-        event.sr=events[n-1].sr
-        event.sb=events[n-1].sb
-
-        values.color=event.color
-        values.team=event.team
-        values.map=event.dom.getElementsByTagName('select')[0].value
-        event.map=values.map
-        if(values.map){
-            values.bid=config.pool[values.map].bid
-            values.mod=config.pool[values.map].mod
-        }
-        values.win=event.dom.getElementsByTagName('select')[1].value
-        event.win=values.win
-        if(values.win=='red')event.sr+=1
-        if(values.win=='blue')event.sb+=1
-        values.sr=event.sr
-        values.sb=event.sb
-
-        steps=[values.map!='',values.win!='']
-    } else if(event.type=='tb'){
-        event.sr=events[n-1].sr
-        event.sb=events[n-1].sb
-        values.win=event.dom.getElementsByTagName('select')[1].value
-        event.win=values.win
-        if(values.win=='red')event.sr+=1
-        if(values.win=='blue')event.sb+=1
-        values.sr=event.sr
-        values.sb=event.sb
-        
-        if(tournament.tbOnlyOne){
-            values.map=event.dom.getElementsByTagName('select')[0].options[1].value
-            event.map=values.map
-            if(values.map){
-                values.bid=config.pool[values.map].bid
-                values.mod=config.pool[values.map].mod
-            }
-            steps=[values.win!='']
-        }else{
-            values.map=event.dom.getElementsByTagName('select')[0].value
-            event.map=values.map
-            if(values.map){
-                values.bid=config.pool[values.map].bid
-                values.mod=config.pool[values.map].mod
-            }
-            steps=[values.map!='',values.win!='']
-        }
-    } else if(event.type=='settle'){
-        values.team=event.sr>event.sb?config.red.name:config.blue.name
     }
 
-    for(key in values)changeAll(event.dom,key,values[key])
-    for(i in steps){
-        const nodeClass=event.dom.getElementsByClassName('step')[i].classList
-        if(steps[i])nodeClass.remove('hidden')
-        else nodeClass.add('hidden')
+    const result=calculateEvent(event,events[n-1],input,config,tournament)
+    Object.assign(event,result.state)
+    for(const key in result.values)changeAll(event.dom,key,result.values[key])
+    result.steps.forEach((complete,index)=>{
+        const nodeClass=event.dom.getElementsByClassName('step')[index].classList
+        nodeClass.toggle('hidden',!complete)
+    })
+    if(event.type!='settle'){
+        const settled=event.sr>=config.gamestowin||event.sb>=config.gamestowin
+        makeFinish(n,allTrue(result.steps),settled)
     }
-    if(event.type!='settle')makeFinish(n,allTrue(steps),event.sr>=config.gamestowin||event.sb>=config.gamestowin)
 }
 
 function addEvent(type){
-    dom=part[type].cloneNode(true)
+    const dom=part[type].cloneNode(true)
     main.appendChild(dom)
     events.push({dom,type,finish:false,sr:null,sb:null})
 }
@@ -1056,7 +1057,7 @@ function init(){
         b.add(new Option('❌空ban',0))
         p.add(new Option('请选择',''))
         t.add(new Option('请选择',''))
-        for(map in config.pool){
+        for(const map in config.pool){
             if(config.pool[map].pickable[0])b.add(new Option(config.pool[map].symbol+map,map))
             if(config.pool[map].pickable[1])p.add(new Option(config.pool[map].symbol+map,map))
             if(config.pool[map].pickable[2])t.add(new Option(config.pool[map].symbol+map,map))
@@ -1074,7 +1075,7 @@ function init(){
     while(main.firstChild)main.removeChild(main.firstChild)
 
     assistPool.innerHTML=''
-    for(map in config.pool){
+    for(const map in config.pool){
         let nl=assistPoolLine.cloneNode(true)
 
         let ncPos=nl.getElementsByClassName('pos')[0]
@@ -1105,22 +1106,10 @@ function init(){
         ncA.innerHTML=pre+player
         assistPlayer.appendChild(nl)
     }
-    for(player of config.red.player)addAssistPlayerLine(player,'<span class="emoji">🟥</span>')
-    for(player of config.blue.player)addAssistPlayerLine(player,'<span class="emoji">🟦</span>')
+    for(const player of config.red.player)addAssistPlayerLine(player,'<span class="emoji">🟥</span>')
+    for(const player of config.blue.player)addAssistPlayerLine(player,'<span class="emoji">🟦</span>')
 
-    addEvent('startup')
-    for(event of config.events){
-        if(event=='b'){
-            addEvent('ban')
-            addEvent('ban')
-        } else if(event=='p'){
-            addEvent('pick')
-            addEvent('pick')
-        } else if(event=='t'){
-            addEvent('tb')
-        }
-    }
-    addEvent('settle')
+    for(const type of eventTypesFromPattern(config.events))addEvent(type)
 }
 </script>
 </body>

@@ -126,3 +126,42 @@ test('重新初始化清除旧事件并重建辅助列表', async () => {
   assert.ok(result.poolLines > 0);
   assert.equal(result.configHidden, true);
 });
+
+test('完整比赛在 4:4 后进入 TB，并以 5:4 结算', async () => {
+  const result = await browser.evaluate(() => {
+    document.querySelector('#configui button').click();
+    const first = events[0].dom.querySelector('select');
+    first.value = 'red'; partOnChange(first);
+    let pickCount = 0;
+    for (const event of events) {
+      if (event.type === 'ban') {
+        const map = event.dom.querySelector('select.map');
+        map.value = '0'; partOnChange(map);
+      } else if (event.type === 'pick') {
+        const map = event.dom.querySelector('select.map');
+        map.value = 'NM1'; partOnChange(map);
+        const win = event.dom.querySelector('select.team');
+        win.value = pickCount++ % 2 === 0 ? 'red' : 'blue';
+        partOnChange(win);
+      }
+    }
+    const tb = events.find(event => event.type === 'tb');
+    const before = {
+      score: [tb.sr, tb.sb],
+      tbVisible: !tb.dom.classList.contains('hidden'),
+      settleHidden: events.at(-1).dom.classList.contains('hidden'),
+    };
+    const win = tb.dom.querySelector('select.team');
+    win.value = 'red'; partOnChange(win);
+    return { before, after: {
+      score: [events.at(-1).sr, events.at(-1).sb],
+      settleVisible: !events.at(-1).dom.classList.contains('hidden'),
+    }};
+  });
+  assert.deepEqual(result.before, {
+    score: [4, 4], tbVisible: true, settleHidden: true,
+  });
+  assert.deepEqual(result.after, {
+    score: [5, 4], settleVisible: true,
+  });
+});
