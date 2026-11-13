@@ -1,0 +1,11 @@
+{
+  "name": "referee-sheet",
+  "private": true,
+  "scripts": {
+    "start": "node scripts/serve.js",
+    "test": "node --test unittest/*.test.js"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
