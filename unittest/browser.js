@@ -13,6 +13,11 @@ const chrome = [
   '/opt/google/chrome/chrome',
 ].find(x => x && fs.existsSync(x));
 
+/**
+ * 启动本地站点与无界面 Chrome，建立测试用的 DevTools 连接。
+ * @returns {Promise<{evaluate:Function,reload:Function,close:Function}>} 页面操作接口。
+ * @throws {Error} 未安装 Chrome 或浏览器启动失败时抛出。
+ */
 async function startBrowser() {
   if (!chrome) throw new Error('Google Chrome is required. Set CHROME_PATH to chrome.exe if needed.');
   const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'referee-sheet-test-'));
@@ -25,6 +30,11 @@ async function startBrowser() {
     pageUrl,
   ], { stdio: ['ignore', 'pipe', 'pipe'], windowsHide: true });
   let browserError = '';
+  /**
+   * 保存 Chrome 错误输出，供启动失败时报告。
+   * @param {Buffer} chunk - Chrome 的错误输出片段。
+   * @returns {void}
+   */
   child.stderr.on('data', chunk => { browserError += chunk.toString(); });
 
   let port;
@@ -46,6 +56,11 @@ async function startBrowser() {
   });
   let nextId = 0;
   const pending = new Map();
+  /**
+   * 将 DevTools 响应交给对应的待完成命令。
+   * @param {MessageEvent} event - WebSocket 消息。
+   * @returns {void}
+   */
   socket.addEventListener('message', event => {
     const message = JSON.parse(event.data);
     if (!message.id) return;
@@ -54,6 +69,12 @@ async function startBrowser() {
     pending.delete(message.id);
     message.error ? waiter.reject(new Error(message.error.message)) : waiter.resolve(message.result);
   });
+  /**
+   * 向 Chrome DevTools Protocol 发送命令。
+   * @param {string} method - 协议方法名。
+   * @param {object} [params={}] - 方法参数。
+   * @returns {Promise<object>} 对应命令的响应。
+   */
   function send(method, params = {}) {
     return new Promise((resolve, reject) => {
       const id = ++nextId;
@@ -61,6 +82,12 @@ async function startBrowser() {
       socket.send(JSON.stringify({ id, method, params }));
     });
   }
+  /**
+   * 在页面中执行表达式或无参数函数并取回普通值。
+   * @param {string|Function} expression - 页面表达式或函数。
+   * @returns {Promise<unknown>} 页面执行结果。
+   * @throws {Error} 页面脚本抛错时抛出详细异常。
+   */
   async function evaluate(expression) {
     if (typeof expression === 'function') expression = `(${expression.toString()})()`;
     const result = await send('Runtime.evaluate', {
@@ -71,6 +98,11 @@ async function startBrowser() {
     }
     return result.result.value;
   }
+  /**
+   * 等待配置载入并完成页面初始化。
+   * @returns {Promise<void>}
+   * @throws {Error} 页面在等待期限内未就绪时抛出。
+   */
   async function waitReady() {
     for (let i = 0; i < 100; i++) {
       try {
@@ -83,6 +115,10 @@ async function startBrowser() {
   await waitReady();
   return {
     evaluate,
+    /**
+     * 重新载入页面，为下一个测试恢复初始状态。
+     * @returns {Promise<void>}
+     */
     async reload() {
       const oldOrigin = await evaluate('performance.timeOrigin');
       await evaluate('window.onbeforeunload = null');
@@ -95,6 +131,10 @@ async function startBrowser() {
       }
       await waitReady();
     },
+    /**
+     * 关闭 Chrome、本地站点并清理临时配置目录。
+     * @returns {Promise<void>}
+     */
     async close() {
       if (socket.readyState === WebSocket.OPEN) {
         socket.send(JSON.stringify({ id: ++nextId, method: 'Browser.close' }));
