@@ -95,8 +95,13 @@ async function startBrowser() {
       await waitReady();
     },
     async close() {
+      if (socket.readyState === WebSocket.OPEN) {
+        socket.send(JSON.stringify({ id: ++nextId, method: 'Browser.close' }));
+      }
       socket.close();
       child.kill();
+      child.stdout.destroy();
+      child.stderr.destroy();
       await new Promise(resolve => {
         if (child.exitCode !== null) return resolve();
         const timer = setTimeout(resolve, 1000);
