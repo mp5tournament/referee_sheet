@@ -737,7 +737,7 @@ const assistPlayerLine=document.getElementsByClassName('assist_player_line')[0]
 
     function autoSelect(team){
         let i=parseInt(team.select.value)
-        if (i<0){
+        if (!Number.isInteger(i) || i<0 || i>=tournament.teamData.length){
             team.name.value=team==c_red?'🟥红队':'🟦蓝队'
             team.cap.value=''
             team.player=[]
