@@ -207,59 +207,91 @@ function turnAssignments(types,firstPick,redName,blueName){
 }
 
 /**
- * 计算单个事件的比分、命令占位符和完成条件。
- * @param {object} event - 当前事件类型及已分配队伍。
- * @param {object|undefined} previous - 前一事件；赛前准备时为空。
- * @param {object} input - 从页面读取的先选方、谱面或胜者。
- * @param {object} match - 当前比赛配置及图池。
- * @param {object} settings - 包含 TB 模式的比赛设置。
- * @returns {{state:object,values:object,steps:boolean[]}} 状态更新、显示值和步骤完成情况。
+ * 计算赛前准备事件的比分与先手提示。
+ * @param {{firstPick:string}} input - 先选方输入。
+ * @param {object} match - 当前比赛队伍。
+ * @returns {{state:object,values:object,steps:boolean[]}} 事件计算结果。
  */
-function calculateEvent(event,previous,input,match,settings){
+function calculateStartup(input,match){
     const values={}
-    let steps=[]
-    const state={}
-    if(event.type=='startup'){
-        state.sr=0
-        state.sb=0
-        if(input.firstPick){
-            const firstBan=input.firstPick=='red'?'blue':'red'
-            values.fp_t=match[input.firstPick].name
-                +'（'+(input.firstPick=='red'?'红队':'蓝队')+'）'
-            values.fb_t=match[firstBan].name
-                +'（'+(firstBan=='red'?'红队':'蓝队')+'）'
-        }
-        steps=[input.firstPick!='']
-    }else if(event.type=='ban'){
-        state.sr=previous.sr
-        state.sb=previous.sb
-        state.map=input.map
+    if(input.firstPick){
+        const firstBan=input.firstPick=='red'?'blue':'red'
+        values.fp_t=match[input.firstPick].name
+            +'（'+(input.firstPick=='red'?'红队':'蓝队')+'）'
+        values.fb_t=match[firstBan].name
+            +'（'+(firstBan=='red'?'红队':'蓝队')+'）'
+    }
+    return {state:{sr:0,sb:0},values,steps:[input.firstPick!='']}
+}
+
+/**
+ * 计算禁图事件并沿用上一事件的比分。
+ * @param {object} event - 已分配队伍的禁图事件。
+ * @param {{sr:number,sb:number}} previous - 上一事件比分。
+ * @param {{map:string}} input - 禁图输入。
+ * @param {object} match - 当前比赛图池。
+ * @returns {{state:object,values:object,steps:boolean[]}} 事件计算结果。
+ */
+function calculateBan(event,previous,input,match){
+    const values={color:event.color,team:event.team,map:input.map}
+    if(input.map)values.bid=input.map=='0'?'空':match.pool[input.map].bid
+    return {
+        state:{sr:previous.sr,sb:previous.sb,map:input.map},
+        values,steps:[input.map!=''],
+    }
+}
+
+/**
+ * 计算普通选图或 TB 的比分、指令值和完成条件。
+ * @param {object} event - 选图或 TB 事件。
+ * @param {{sr:number,sb:number}} previous - 上一事件比分。
+ * @param {{map:string,win:string}} input - 谱面和胜者输入。
+ * @param {object} match - 当前比赛图池。
+ * @param {object} settings - 包含单 TB 开关的比赛配置。
+ * @returns {{state:object,values:object,steps:boolean[]}} 事件计算结果。
+ */
+function calculatePlayedMap(event,previous,input,match,settings){
+    const score=scoreAfter(previous,input.win)
+    const state={...score,map:input.map,win:input.win}
+    const values={map:input.map,win:input.win,sr:score.sr,sb:score.sb}
+    if(event.type=='pick'){
         values.color=event.color
         values.team=event.team
-        values.map=input.map
-        if(input.map)values.bid=input.map=='0'?'空':match.pool[input.map].bid
-        steps=[input.map!='']
-    }else if(event.type=='pick'||event.type=='tb'){
-        Object.assign(state,scoreAfter(previous,input.win))
-        state.map=input.map
-        state.win=input.win
-        values.map=input.map
-        values.win=input.win
-        values.sr=state.sr
-        values.sb=state.sb
-        if(event.type=='pick'){
-            values.color=event.color
-            values.team=event.team
-        }
-        if(input.map){
-            values.bid=match.pool[input.map].bid
-            values.mod=match.pool[input.map].mod
-        }
-        steps=event.type=='tb'&&settings.tbOnlyOne
-            ?[input.win!='']
-            :[input.map!='',input.win!='']
-    }else if(event.type=='settle'){
-        values.team=event.sr>event.sb?match.red.name:match.blue.name
     }
+    if(input.map){
+        values.bid=match.pool[input.map].bid
+        values.mod=match.pool[input.map].mod
+    }
+    const steps=event.type=='tb'&&settings.tbOnlyOne
+        ?[input.win!='']
+        :[input.map!='',input.win!='']
     return {state,values,steps}
+}
+
+/**
+ * 计算结算事件需要显示的胜者名称。
+ * @param {object} event - 带最终比分的结算事件。
+ * @param {object} match - 双方队伍配置。
+ * @returns {{state:object,values:object,steps:boolean[]}} 事件计算结果。
+ */
+function calculateSettlement(event,match){
+    const team=event.sr>event.sb?match.red.name:match.blue.name
+    return {state:{},values:{team},steps:[]}
+}
+
+/**
+ * 按事件类型选择对应的计算函数。
+ * @param {object} event - 当前比赛事件。
+ * @param {object|undefined} previous - 前一事件；赛前准备时为空。
+ * @param {object} input - 页面输入的纯值。
+ * @param {object} match - 当前比赛配置。
+ * @param {object} settings - 比赛设置。
+ * @returns {{state:object,values:object,steps:boolean[]}} 事件计算结果。
+ */
+function calculateEvent(event,previous,input,match,settings){
+    if(event.type=='startup')return calculateStartup(input,match)
+    if(event.type=='ban')return calculateBan(event,previous,input,match)
+    if(event.type=='pick'||event.type=='tb')
+        return calculatePlayedMap(event,previous,input,match,settings)
+    return calculateSettlement(event,match)
 }

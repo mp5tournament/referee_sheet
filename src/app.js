@@ -130,213 +130,213 @@ const assistPoolLine=document.getElementsByClassName('assist_pool_line')[0]
 const assistPlayerLine=document.getElementsByClassName('assist_player_line')[0]
 
 // 复制命令
-{
-    const mouse={x:0,y:0}
-    const box0=document.getElementsByClassName('tip-box')[0]
-    /**
-     * 保存最近一次点击坐标，用于定位复制提示。
-     * @param {MouseEvent} event - 页面点击事件。
-     * @returns {void}
-     */
-    document.addEventListener('click', function recordClickPosition(event){
-        mouse.x = event.clientX
-        mouse.y = event.clientY
-    })
-    /**
-     * 复制命令或指定文本，并在点击位置显示成功提示。
-     * @param {HTMLElement|null} x - 提供 title 或文本的命令节点。
-     * @param {string|null} [y=null] - 显式指定的复制内容。
-     * @returns {void}
-     */
-    function copyText(x,y=null){
-        const input = document.createElement('textarea')
-        document.body.appendChild(input)
-        input.value = y===null?(x.title||x.textContent):y
-        input.select()
-        document.execCommand('Copy')
-        document.body.removeChild(input)
+const mouse={x:0,y:0}
+const box0=document.getElementsByClassName('tip-box')[0]
 
-        /**
-         * 创建复制成功提示。
-         * @returns {void}
-         */
-        setTimeout(function showCopyTip(){
-            const box = box0.cloneNode(true)
-            document.body.appendChild(box)
-            box.style.left = mouse.x + 'px'
-            box.style.top = mouse.y + 'px'
-            box.style.display = 'block'
-            box.style.opacity = 1
-            /**
-             * 开始淡出复制提示。
-             * @returns {void}
-             */
-            setTimeout(function fadeCopyTip(){
-                box.style.opacity = 0.75
-                /**
-                 * 将提示透明度降至一半。
-                 * @returns {void}
-                 */
-                setTimeout(function dimCopyTipHalf(){
-                    box.style.opacity = 0.5
-                },40)
-                /**
-                 * 将提示透明度降至四分之一。
-                 * @returns {void}
-                 */
-                setTimeout(function dimCopyTipQuarter(){
-                    box.style.opacity = 0.25
-                },80)
-                /**
-                 * 移除已经淡出的提示。
-                 * @returns {void}
-                 */
-                setTimeout(function removeCopyTip(){
-                    box.style.opacity = 0
-                    document.body.removeChild(box)
-                },120)
-            },500)
-        },10)
+/**
+ * 保存最近一次点击坐标，用于定位复制提示。
+ * @param {MouseEvent} event - 页面点击事件。
+ * @returns {void}
+ */
+function recordClickPosition(event){
+    mouse.x=event.clientX
+    mouse.y=event.clientY
+}
+document.addEventListener('click',recordClickPosition)
+
+/**
+ * 设置复制提示的透明度，并在动画结束后移除节点。
+ * @param {HTMLElement} box - 当前复制提示节点。
+ * @param {number} opacity - 目标透明度。
+ * @returns {void}
+ */
+function fadeCopyTip(box,opacity){
+    box.style.opacity=opacity
+    if(opacity===0)box.remove()
+}
+
+/**
+ * 在最近一次点击的位置创建短暂的复制成功提示。
+ * @returns {void}
+ */
+function showCopyTip(){
+    const box=box0.cloneNode(true)
+    document.body.appendChild(box)
+    box.style.left=mouse.x+'px'
+    box.style.top=mouse.y+'px'
+    box.style.display='block'
+    box.style.opacity=1
+    for(const [delay,opacity] of [[500,0.75],[540,0.5],[580,0.25],[620,0]]){
+        setTimeout(fadeCopyTip,delay,box,opacity)
     }
+}
+
+/**
+ * 复制命令或指定文本，并显示成功提示。
+ * @param {HTMLElement|null} x - 提供 title 或文本的命令节点。
+ * @param {string|null} [y=null] - 显式指定的复制内容。
+ * @returns {void}
+ */
+function copyText(x,y=null){
+    const input=document.createElement('textarea')
+    input.value=y===null?(x.title||x.textContent):y
+    document.body.appendChild(input)
+    input.select()
+    document.execCommand('Copy')
+    input.remove()
+    setTimeout(showCopyTip,10)
 }
 
 // commands
-{
-    /**
-     * 从命令模板生成某个比赛阶段的可复制指令节点。
-     * @param {string} partName - startup、ban、pick、tb、settle 或 general。
-     * @returns {void}
-     */
-    function loadPart(partName){
-        let thisPart=document.getElementsByClassName(partName)[0]
-        let commands=part[partName]
-        let fatherNode=(partName=='general'?general:thisPart).getElementsByClassName('command')[0]
-        for(const command of commands){
-            if(command){
-                let nc=document.createElement('a')
-                fatherNode.appendChild(nc)
-                nc.setAttribute('href','javascript:void(0)')
-                nc.setAttribute('onclick','copyText(this)')
-                nc.innerHTML=esc(command).replace(/{/g,'<span class="v_').replace(/}/g,'"></span>')
-            }else if(partName=='general'){
-                fatherNode.appendChild(document.createElement('hr'))
-            }else{
-                let nf=document.createElement('div')
-                nf.setAttribute('class','step hidden')
-                fatherNode.appendChild(nf)
-                fatherNode=nf
-            }
-        }
-        part[partName]=thisPart
-    }
-    for(const partName in part)loadPart(partName)
-    if(tournament.tbOnlyOne)part.tb.getElementsByClassName('selectTB')[0].classList.add('hidden')
+/**
+ * 把一条命令模板转换为可复制的链接。
+ * @param {HTMLElement} container - 命令容器。
+ * @param {string} command - 带占位符的命令模板。
+ * @returns {void}
+ */
+function appendCommandLink(container,command){
+    const link=document.createElement('a')
+    link.setAttribute('href','javascript:void(0)')
+    link.setAttribute('onclick','copyText(this)')
+    link.innerHTML=esc(command).replace(/{/g,'<span class="v_').replace(/}/g,'"></span>')
+    container.appendChild(link)
 }
 
+/**
+ * 添加下一段命令的隐藏步骤容器。
+ * @param {HTMLElement} container - 当前命令容器。
+ * @returns {HTMLElement} 新的步骤容器。
+ */
+function appendCommandStep(container){
+    const step=document.createElement('div')
+    step.className='step hidden'
+    container.appendChild(step)
+    return step
+}
+
+/**
+ * 从命令模板生成某个比赛阶段的可复制指令节点。
+ * @param {string} partName - startup、ban、pick、tb、settle 或 general。
+ * @returns {void}
+ */
+function loadPart(partName){
+    const thisPart=document.getElementsByClassName(partName)[0]
+    const commands=part[partName]
+    let container=(partName=='general'?general:thisPart).getElementsByClassName('command')[0]
+    for(const command of commands){
+        if(command){
+            appendCommandLink(container,command)
+            continue
+        }
+        if(partName=='general')container.appendChild(document.createElement('hr'))
+        else container=appendCommandStep(container)
+    }
+    part[partName]=thisPart
+}
+for(const partName in part)loadPart(partName)
+if(tournament.tbOnlyOne)part.tb.getElementsByClassName('selectTB')[0].classList.add('hidden')
 
 // configui
-{
-    const c_red={
-        select:configui.getElementsByTagName('select')[0],
-        name:configui.getElementsByClassName('name')[0].getElementsByClassName('red')[0],
-        cap:configui.getElementsByClassName('cap')[0].getElementsByClassName('red')[0],
-        player:[],
-    }
-    const c_blue={
-        select:configui.getElementsByTagName('select')[1],
-        name:configui.getElementsByClassName('name')[0].getElementsByClassName('blue')[0],
-        cap:configui.getElementsByClassName('cap')[0].getElementsByClassName('blue')[0],
-        player:[],
-    }
-    const c_round=configui.getElementsByClassName('round')[0]
-    const c_button=configui.getElementsByTagName('button')
-    for (const i in tournament.teamData){
-        const team=tournament.teamData[i]
-        c_red.select.add(new Option(team.name,i))
-        c_blue.select.add(new Option(team.name,i))
-    }
-    let last_round=''
-    for (const round in tournament.rounds){
-        c_round.add(new Option(round,round))
-        last_round=round
-    }
-    c_round.value=last_round
+const c_red={
+    select:configui.getElementsByTagName('select')[0],
+    name:configui.getElementsByClassName('name')[0].getElementsByClassName('red')[0],
+    cap:configui.getElementsByClassName('cap')[0].getElementsByClassName('red')[0],
+    player:[],
+}
+const c_blue={
+    select:configui.getElementsByTagName('select')[1],
+    name:configui.getElementsByClassName('name')[0].getElementsByClassName('blue')[0],
+    cap:configui.getElementsByClassName('cap')[0].getElementsByClassName('blue')[0],
+    player:[],
+}
+const c_round=configui.getElementsByClassName('round')[0]
+const c_button=configui.getElementsByTagName('button')
+for (const i in tournament.teamData){
+    const team=tournament.teamData[i]
+    c_red.select.add(new Option(team.name,i))
+    c_blue.select.add(new Option(team.name,i))
+}
+let last_round=''
+for (const round in tournament.rounds){
+    c_round.add(new Option(round,round))
+    last_round=round
+}
+c_round.value=last_round
 
-    /**
-     * 将队伍预设填入设置表单，空选择时恢复默认队名。
-     * @param {object} team - 红队或蓝队的表单节点集合。
-     * @returns {void}
-     */
-    function autoSelect(team){
-        let i=parseInt(team.select.value)
-        if (!Number.isInteger(i) || i<0 || i>=tournament.teamData.length){
-            team.name.value=team==c_red?'🟥红队':'🟦蓝队'
-            team.cap.value=''
-            team.player=[]
-        }else{
-            team.name.value=tournament.teamData[i].name
-            team.cap.value=tournament.teamData[i].cap
-            team.player=[tournament.teamData[i].cap,...tournament.teamData[i].player]
-        }
+/**
+ * 将队伍预设填入设置表单，空选择时恢复默认队名。
+ * @param {object} team - 红队或蓝队的表单节点集合。
+ * @returns {void}
+ */
+function autoSelect(team){
+    let i=parseInt(team.select.value)
+    if (!Number.isInteger(i) || i<0 || i>=tournament.teamData.length){
+        team.name.value=team==c_red?'🟥红队':'🟦蓝队'
+        team.cap.value=''
+        team.player=[]
+    }else{
+        team.name.value=tournament.teamData[i].name
+        team.cap.value=tournament.teamData[i].cap
+        team.player=[tournament.teamData[i].cap,...tournament.teamData[i].player]
     }
-    /**
-     * 应用红队预设。
-     * @returns {void}
-     */
-    c_red.select.onchange=function selectRedTeam(){
-        autoSelect(c_red)
-    }
-    /**
-     * 应用蓝队预设。
-     * @returns {void}
-     */
-    c_blue.select.onchange=function selectBlueTeam(){
-        autoSelect(c_blue)
-    }
+}
+/**
+ * 应用红队预设。
+ * @returns {void}
+ */
+c_red.select.onchange=function selectRedTeam(){
+    autoSelect(c_red)
+}
+/**
+ * 应用蓝队预设。
+ * @returns {void}
+ */
+c_blue.select.onchange=function selectBlueTeam(){
+    autoSelect(c_blue)
+}
 
-    /**
-     * 确认设置并重新初始化比赛流程。
-     * @returns {void}
-     */
-    c_button[0].onclick=function confirmConfig(){
-        if(config){
-            if(!confirm("修改设置将导致页面重新初始化，已填写的信息丢失，你确定要这么做吗？"))return
-        }else{
-            c_button[1].removeAttribute('disabled')
-        }
-        init()
-        configui.classList.add('hidden')
+/**
+ * 确认设置并重新初始化比赛流程。
+ * @returns {void}
+ */
+c_button[0].onclick=function confirmConfig(){
+    if(config){
+        if(!confirm("修改设置将导致页面重新初始化，已填写的信息丢失，你确定要这么做吗？"))return
+    }else{
+        c_button[1].removeAttribute('disabled')
     }
-    /**
-     * 关闭设置面板。
-     * @returns {void}
-     */
-    c_button[1].onclick=function cancelConfig(){
-        configui.classList.add('hidden')
-    }
-    /**
-     * 打开设置面板。
-     * @returns {void}
-     */
-    document.getElementById('config').onclick=function openConfig(){
-        configui.classList.remove('hidden')
-    }
+    init()
+    configui.classList.add('hidden')
+}
+/**
+ * 关闭设置面板。
+ * @returns {void}
+ */
+c_button[1].onclick=function cancelConfig(){
+    configui.classList.add('hidden')
+}
+/**
+ * 打开设置面板。
+ * @returns {void}
+ */
+document.getElementById('config').onclick=function openConfig(){
+    configui.classList.remove('hidden')
+}
 
-    /**
-     * 从设置表单重新生成当前比赛配置。
-     * @returns {void}
-     */
-    function reloadConfig(){
-        config=buildMatchConfig(tournament,c_round.value,{
-            name:c_red.name.value,
-            cap:c_red.cap.value,
-            player:[...c_red.player],
-        },{
-            name:c_blue.name.value,
-            cap:c_blue.cap.value,
-            player:[...c_blue.player],
-        })
-    }
+/**
+ * 从设置表单重新生成当前比赛配置。
+ * @returns {void}
+ */
+function reloadConfig(){
+    config=buildMatchConfig(tournament,c_round.value,{
+        name:c_red.name.value,
+        cap:c_red.cap.value,
+        player:[...c_red.player],
+    },{
+        name:c_blue.name.value,
+        cap:c_blue.cap.value,
+        player:[...c_blue.player],
+    })
 }
 
 // 保存比赛记录
@@ -438,61 +438,94 @@ function readEventSelection(event,settings){
 }
 
 /**
+ * 找到触发控件所属的比赛事件索引。
+ * @param {HTMLElement} node - 发生变化的控件。
+ * @returns {number} 对应事件索引。
+ */
+function findEventIndex(node){
+    while(!node.classList.contains('part'))node=node.parentNode
+    for(let index=0;index<events.length;index++){
+        if(events[index].dom==node)return index
+    }
+    return -1
+}
+
+/**
+ * 离开已开始比赛页面时显示确认信息。
+ * @returns {string} 浏览器使用的离开提示。
+ */
+function confirmLeavingMatch(){
+    return '确认要退出吗？'
+}
+
+/**
+ * 根据先选方移动占位节点，使页面顺序与比赛顺序一致。
+ * @returns {void}
+ */
+function positionFirstPickRegulator(){
+    if(firstPick=='red')main.insertBefore(firstPickRegulator,events[0].dom)
+    else if(firstPickRegulator.parentNode==main)firstPickRegulator.remove()
+}
+
+/**
+ * 为所有禁图和选图事件分配执行队伍。
+ * @returns {void}
+ */
+function assignTurnTeams(){
+    const types=[]
+    for(const item of events)types.push(item.type)
+    const assignments=turnAssignments(types,firstPick,config.red.name,config.blue.name)
+    for(let index=0;index<events.length;index++){
+        if(!assignments[index])continue
+        events[index].color=assignments[index].color
+        events[index].team=assignments[index].team
+    }
+}
+
+/**
+ * 应用先选方输入并更新后续禁选图顺序。
+ * @param {{firstPick:string}} input - 赛前准备表单输入。
+ * @returns {void}
+ */
+function applyStartupInput(input){
+    window.onbeforeunload=confirmLeavingMatch
+    firstPick=input.firstPick
+    positionFirstPickRegulator()
+    if(firstPick)assignTurnTeams()
+}
+
+/**
+ * 把事件计算结果写入状态和页面步骤。
+ * @param {object} event - 要更新的比赛事件。
+ * @param {{state:object,values:object,steps:boolean[]}} result - 事件计算结果。
+ * @returns {void}
+ */
+function renderCalculatedEvent(event,result){
+    Object.assign(event,result.state)
+    for(const key in result.values)changeAll(event.dom,key,result.values[key])
+    for(let index=0;index<result.steps.length;index++){
+        const nodeClass=event.dom.getElementsByClassName('step')[index].classList
+        nodeClass.toggle('hidden',!result.steps[index])
+    }
+}
+
+/**
  * 在事件输入变化后重算状态、更新指令并推进流程。
  * @param {HTMLElement|null} thisPart - 触发变化的表单节点；按索引调用时可为空。
  * @param {number|string|null} [n=null] - 可选的事件索引。
  * @returns {void}
  */
 function partOnChange(thisPart,n=null){
-    if(n===null){
-        while(!thisPart.classList.contains('part'))thisPart=thisPart.parentNode
-        for(let index=0;index<events.length;index++)if(events[index].dom==thisPart){
-            n=index
-            break
-        }
-    }
-    n=Number(n)
-    const event=events[n]
+    const index=n===null?findEventIndex(thisPart):Number(n)
+    const event=events[index]
     event.dom.classList.remove('hidden')
     const input=readEventSelection(event,tournament)
-
-    if(event.type=='startup'){
-        /**
-         * 离开已开始比赛页面时显示确认信息。
-         * @returns {string} 浏览器使用的离开提示。
-         */
-        window.onbeforeunload=function confirmLeavingMatch(){return '确认要退出吗？'}
-        firstPick=input.firstPick
-        try{
-            if(firstPick=='red')main.insertBefore(firstPickRegulator,event.dom)
-            if(firstPick=='blue')main.removeChild(firstPickRegulator)
-        }catch{}
-        if(firstPick){
-            const types=[]
-            for(const item of events)types.push(item.type)
-            const assignments=turnAssignments(
-                types,firstPick,config.red.name,config.blue.name
-            )
-            for(const i in events){
-                if(!assignments[i])continue
-                events[i].color=assignments[i].color
-                events[i].team=assignments[i].team
-            }
-        }
-    }
-
-    const result=calculateEvent(event,events[n-1],input,config,tournament)
-    Object.assign(event,result.state)
-    for(const key in result.values)changeAll(event.dom,key,result.values[key])
-    for(let index=0;index<result.steps.length;index++){
-        const complete=result.steps[index]
-        const nodeClass=event.dom.getElementsByClassName('step')[index].classList
-        nodeClass.toggle('hidden',!complete)
-    }
-    if(event.type!='settle'){
-        const settled=event.sr>=config.gamestowin||event.sb>=config.gamestowin
-        makeFinish(n,allTrue(result.steps),settled)
-    }
+    if(event.type=='startup')applyStartupInput(input)
+    const result=calculateEvent(event,events[index-1],input,config,tournament)
+    renderCalculatedEvent(event,result)
+    if(event.type=='settle')return
+    const settled=event.sr>=config.gamestowin||event.sb>=config.gamestowin
+    makeFinish(index,allTrue(result.steps),settled)
 }
 
 /**
@@ -507,80 +540,109 @@ function addEvent(type){
 }
 
 /**
- * 根据当前表单设置重建图池、辅助指令和比赛事件。
+ * 按可禁、可选和 TB 权限填充图池下拉框。
  * @returns {void}
  */
-function init(){
-    reloadConfig()
-
-    {
-        const b=part.ban.querySelector('select.map')
-        const p=part.pick.querySelector('select.map')
-        const t=part.tb.querySelector('select.map')
-        b.innerHTML=''
-        p.innerHTML=''
-        t.innerHTML=''
-        b.add(new Option('请选择',''))
-        b.add(new Option('❌空ban',0))
-        p.add(new Option('请选择',''))
-        t.add(new Option('请选择',''))
-        for(const map in config.pool){
-            if(config.pool[map].pickable[0])b.add(new Option(config.pool[map].symbol+map,map))
-            if(config.pool[map].pickable[1])p.add(new Option(config.pool[map].symbol+map,map))
-            if(config.pool[map].pickable[2])t.add(new Option(config.pool[map].symbol+map,map))
-        }
+function populateMapOptions(){
+    const ban=part.ban.querySelector('select.map')
+    const pick=part.pick.querySelector('select.map')
+    const tb=part.tb.querySelector('select.map')
+    ban.replaceChildren(new Option('请选择',''),new Option('❌空ban',0))
+    pick.replaceChildren(new Option('请选择',''))
+    tb.replaceChildren(new Option('请选择',''))
+    for(const map in config.pool){
+        const item=config.pool[map]
+        const label=item.symbol+map
+        if(item.pickable[0])ban.add(new Option(label,map))
+        if(item.pickable[1])pick.add(new Option(label,map))
+        if(item.pickable[2])tb.add(new Option(label,map))
     }
+}
 
+/**
+ * 将比赛轮次、队名和队长写入页面及命令模板。
+ * @returns {void}
+ */
+function renderMatchHeader(){
     changeAll(document,'round',config.round)
     changeAll(document,'red',config.red.name)
     changeAll(document,'blue',config.blue.name)
     changeAll(document,'tb_bid',config.tb)
     changeAll(document,'red_cap',config.red.cap)
     changeAll(document,'blue_cap',config.blue.cap)
+}
 
-    events=[]
-    while(main.firstChild)main.removeChild(main.firstChild)
-
-    assistPool.innerHTML=''
+/**
+ * 生成全部谱面的 MAP 和 MOD 辅助指令。
+ * @returns {void}
+ */
+function renderPoolCommands(){
+    assistPool.replaceChildren()
     for(const map in config.pool){
-        let nl=assistPoolLine.cloneNode(true)
-
-        let ncPos=nl.getElementsByClassName('pos')[0]
-        ncPos.innerHTML=`${config.pool[map].symbol}${map}`
-        let ncMap=nl.getElementsByClassName('map')[0]
-        ncMap.setAttribute('href','javascript:void(0)')
-        ncMap.setAttribute('onclick','copyText(this)')
-        ncMap.setAttribute('title',`!MP MAP ${config.pool[map].bid}`)
-        ncMap.innerHTML='MAP'
-        let ncMod=nl.getElementsByClassName('mod')[0]
-        ncMod.setAttribute('href','javascript:void(0)')
-        ncMod.setAttribute('onclick','copyText(this)')
-        ncMod.setAttribute('title',`!MP MODS ${config.pool[map].mod}`)
-        ncMod.innerHTML='MOD'
-
-        assistPool.appendChild(nl)
+        const item=config.pool[map]
+        const line=assistPoolLine.cloneNode(true)
+        line.getElementsByClassName('pos')[0].textContent=item.symbol+map
+        const mapLink=line.getElementsByClassName('map')[0]
+        mapLink.setAttribute('href','javascript:void(0)')
+        mapLink.setAttribute('onclick','copyText(this)')
+        mapLink.setAttribute('title','!MP MAP '+item.bid)
+        mapLink.textContent='MAP'
+        const modLink=line.getElementsByClassName('mod')[0]
+        modLink.setAttribute('href','javascript:void(0)')
+        modLink.setAttribute('onclick','copyText(this)')
+        modLink.setAttribute('title','!MP MODS '+item.mod)
+        modLink.textContent='MOD'
+        assistPool.appendChild(line)
     }
+}
 
-    assistPlayer.innerHTML=''
-    /**
-     * 在辅助列表中增加一条队员邀请指令。
-     * @param {string} player - osu! 玩家 ID。
-     * @param {string} [pre=''] - 用于标识队伍的 HTML 前缀。
-     * @returns {void}
-     */
-    function addAssistPlayerLine(player,pre=''){
-        let nl=assistPlayerLine.cloneNode(true)
-        let ncA=nl.getElementsByTagName('a')[0]
-        if(player){
-            ncA.setAttribute('href','javascript:void(0)')
-            ncA.setAttribute('onclick','copyText(this)')
-            ncA.setAttribute('title', `!MP INVITE ${player}`)
-        }
-        ncA.innerHTML=pre+player
-        assistPlayer.appendChild(nl)
+/**
+ * 在辅助列表中增加一条队员邀请指令。
+ * @param {string} player - osu! 玩家 ID。
+ * @param {string} [pre=''] - 用于标识队伍的 HTML 前缀。
+ * @returns {void}
+ */
+function addAssistPlayerLine(player,pre=''){
+    const line=assistPlayerLine.cloneNode(true)
+    const link=line.getElementsByTagName('a')[0]
+    if(player){
+        link.setAttribute('href','javascript:void(0)')
+        link.setAttribute('onclick','copyText(this)')
+        link.setAttribute('title','!MP INVITE '+player)
     }
+    link.innerHTML=pre+esc(player)
+    assistPlayer.appendChild(line)
+}
+
+/**
+ * 按红蓝队名单重建队员邀请辅助指令。
+ * @returns {void}
+ */
+function renderPlayerCommands(){
+    assistPlayer.replaceChildren()
     for(const player of config.red.player)addAssistPlayerLine(player,'<span class="emoji">🟥</span>')
     for(const player of config.blue.player)addAssistPlayerLine(player,'<span class="emoji">🟦</span>')
+}
 
+/**
+ * 清空旧比赛节点并按轮次顺序创建新事件。
+ * @returns {void}
+ */
+function rebuildEvents(){
+    events=[]
+    main.replaceChildren()
     for(const type of eventTypesFromPattern(config.events))addEvent(type)
+}
+
+/**
+ * 根据当前表单设置重建图池、辅助指令和比赛事件。
+ * @returns {void}
+ */
+function init(){
+    reloadConfig()
+    populateMapOptions()
+    renderMatchHeader()
+    rebuildEvents()
+    renderPoolCommands()
+    renderPlayerCommands()
 }

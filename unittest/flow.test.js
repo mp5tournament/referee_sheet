@@ -38,6 +38,22 @@ test('蓝队先选时，首个禁图与选图顺序相应交换', async () => {
   ]);
 });
 
+test('清空先选方会收起后续事件和顺序占位节点', async () => {
+  const result = await browser.evaluate(() => {
+    document.querySelector('#configui button').click();
+    const select = events[0].dom.querySelector('select');
+    select.value = 'red'; partOnChange(select);
+    const inserted = firstPickRegulator.parentNode === main;
+    select.value = ''; partOnChange(select);
+    return {
+      inserted,
+      removed: firstPickRegulator.parentNode !== main,
+      firstBanHidden: events[1].dom.classList.contains('hidden'),
+    };
+  });
+  assert.deepEqual(result, { inserted: true, removed: true, firstBanHidden: true });
+});
+
 test('空禁图可推进，普通禁图会显示谱面 ID', async () => {
   const result = await browser.evaluate(() => {
     document.querySelector('#configui button').click();
