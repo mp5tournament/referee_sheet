@@ -58,6 +58,20 @@ test('辅助图池与队员面板可分别切换显示', async () => {
   assert.deepEqual(result.final, [true, false]);
 });
 
+test('复制命令使用原始文本，包括空字符串', async () => {
+  const result = await browser.evaluate(() => {
+    const copied = [];
+    document.execCommand = () => {
+      copied.push(document.querySelector('body > textarea').value);
+      return true;
+    };
+    copyText(null, '<b>&');
+    copyText(null, '');
+    return copied;
+  });
+  assert.deepEqual(result, ['<b>&', '']);
+});
+
 test('主表格文本包含先选方以及红蓝两队禁图', async () => {
   const result = await browser.evaluate(() => {
     document.querySelector('#configui button').click();

@@ -1,0 +1,277 @@
+{
+  "name": "MP5 Xronical",
+  "nickname": "MP5X",
+  "tbPickable": false,
+  "tbOnlyOne": true,
+  "teamPlayingSize": 3,
+  "teamData": [
+    {
+      "name": "好麻烦啊......",
+      "cap": "Akari Date",
+      "player": [
+        "Tokai-Teio",
+        "mickeymouse",
+        "NagiSea",
+        "Giggers",
+        "tt66ea"
+      ]
+    },
+    {
+      "name": "地下osu727",
+      "cap": "Asatsuki Sakura",
+      "player": [
+        "Tensorera",
+        "Yozora Naohi",
+        "YamooSama",
+        "-Normal XiGua-",
+        "KawashiroNitori"
+      ]
+    },
+    {
+      "name": "夕阳红养老院",
+      "cap": "Pimba",
+      "player": [
+        "[SHK]SparkNight",
+        "BenZn",
+        "na-gi",
+        "xgj",
+        "-fm777-"
+      ]
+    },
+    {
+      "name": "我发现队友都玩osu",
+      "cap": "R8R8",
+      "player": [
+        "MyAngelChino",
+        "-Hokusai-",
+        "ANITYA",
+        "Aurora_fang",
+        "yalove"
+      ]
+    },
+    {
+      "name": "ntr！﹙gayzer﹚",
+      "cap": "[ShiinaMashiro]",
+      "player": [
+        "funehiro",
+        "[1552828]",
+        "[SHK]Liny",
+        "hideman",
+        "Dream_W"
+      ]
+    },
+    {
+      "name": "東方海酒伝",
+      "cap": "Hoshino Tented",
+      "player": [
+        "[SHK]Hina",
+        "kentokanami",
+        "Ink_Sakura",
+        "XENOZA",
+        "CjhSmileFace"
+      ]
+    },
+    {
+      "name": "我借充電器了有電了",
+      "cap": "touhou chef",
+      "player": [
+        "[SHK]Grapefruit",
+        "CooRie",
+        "Misnel_233",
+        "Sendoh",
+        "Nigellus"
+      ]
+    },
+    {
+      "name": "MP5 U40",
+      "cap": "Pata-Mon",
+      "player": [
+        "[SHK]rainbow03",
+        "Natsume4i",
+        "1 zero",
+        "Naaahida",
+        "[SHK]trytodupe"
+      ]
+    },
+    {
+      "name": "天青色瞪眼魚",
+      "cap": "UU12321",
+      "player": [
+        "Mayoker",
+        "Tong Tong",
+        "huoyaoyuan",
+        "var1ation",
+        "Thearthman"
+      ]
+    },
+    {
+      "name": "QQ企鵝二隊",
+      "cap": "m1saka_mikoto",
+      "player": [
+        "mike233333",
+        "KapheL",
+        "[SHK]bread114",
+        "fate80016",
+        "-Yae-Sakura-"
+      ]
+    },
+    {
+      "name": "投降喵",
+      "cap": "Kaelisz",
+      "player": [
+        "qiao_liang",
+        "FroZZZZZen",
+        "relax famosuc",
+        "YIROU",
+        "[ Snow Neko ]"
+      ]
+    },
+    {
+      "name": "不上班",
+      "cap": "Runick Fountain",
+      "player": [
+        "MyAngelMizuki_",
+        "lthreewood",
+        "senpaiOwO",
+        "Sylvialline",
+        "SeSource"
+      ]
+    },
+    {
+      "name": "於众落班仲打比赛之事",
+      "cap": "Cup of Chino",
+      "player": [
+        "FireBanana",
+        "Poow___",
+        "SzZzC",
+        "Bei_chen",
+        "SBlaohan666"
+      ]
+    },
+    {
+      "name": "SHK丁一丁",
+      "cap": "[SHK] Pain boy",
+      "player": [
+        "[SHK]Erika",
+        "[SHK] Auto",
+        "[SHK]Dragon-Fox",
+        "chno",
+        "soft water"
+      ]
+    },
+    {
+      "name": "QQ企鹅战队",
+      "cap": "-_Chieri_-",
+      "player": [
+        "Asteroian",
+        "H4ppy_n3w_y34r",
+        "o1DreaM",
+        "ElicyAnn",
+        "zuitingqingyin"
+      ]
+    },
+    {
+      "name": "月球方舟萝莉号",
+      "cap": "-Ai Xing-",
+      "player": [
+        "ll993675730",
+        "Delta34301370",
+        "DTY_uwu",
+        "Saykai_",
+        "HUAGUANQIN"
+      ]
+    }
+  ],
+  "rounds": {
+    "瑞士轮（一）": {
+      "events": "bpbpppt",
+      "pool": {
+        "NM": [
+          "1809691",
+          "5808007",
+          "4565418",
+          "3221246",
+          "3943818"
+        ],
+        "HD": [
+          "2846585",
+          "115352"
+        ],
+        "HR": [
+          "2532167",
+          "2164665"
+        ],
+        "DT": [
+          "876674",
+          "3256245",
+          "1582581"
+        ],
+        "FM": [
+          "1657926",
+          "1429975"
+        ],
+        "CA": [
+          "5238831",
+          "364990"
+        ],
+        "TB": [
+          "854972"
+        ]
+      }
+    },
+    "瑞士轮（二）": {
+      "events": "bpbpppt",
+      "pool": {
+        "NM": [
+          "804164",
+          "209276",
+          "269773",
+          "2044547",
+          "2635981"
+        ],
+        "HD": [
+          "3279104",
+          "4323255"
+        ],
+        "HR": [
+          "719594",
+          "4556723"
+        ],
+        "DT": [
+          "1624401",
+          "451406",
+          "4682397"
+        ],
+        "FM": [
+          "741853",
+          "81958"
+        ],
+        "CA": [
+          "895331",
+          "533622"
+        ],
+        "TB": [
+          "2452465"
+        ]
+      }
+    }
+  },
+  "poolMod": {
+    "NM": "NF",
+    "HD": "NF HD",
+    "HR": "NF HR",
+    "DT": "NF DT",
+    "FM": "NF FreeMod",
+    "TB": "NF FreeMod",
+    "CA": "NF FreeMod"
+  },
+  "poolSymbol": {
+    "NM": "⚪",
+    "HD": "🟠",
+    "HR": "🔴",
+    "DT": "🟣",
+    "FM": "🔵",
+    "TB": "🟢",
+    "CA": "🟡"
+  }
+}
